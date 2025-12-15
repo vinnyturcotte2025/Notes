@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <title>Notes by Enzo</title>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <style>
   body {
     margin: 0;
@@ -25,42 +29,8 @@
     box-shadow: 0 0 50px rgba(0,0,0,0.6);
   }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 6px;
-  }
-
-  .subtitle {
-    text-align: center;
-    color: #94a3b8;
-    margin-bottom: 16px;
-    font-size: 0.9rem;
-  }
-
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 12px;
-  }
-
-  button, input {
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: none;
-    font-size: 0.9rem;
-  }
-
-  button {
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-  }
-
-  button.secondary {
-    background: #475569;
-  }
+  h1 { text-align: center; margin-bottom: 6px; }
+  .subtitle { text-align: center; color: #94a3b8; margin-bottom: 12px; }
 
   textarea {
     width: 100%;
@@ -71,15 +41,28 @@
     border-radius: 12px;
     padding: 12px;
     resize: none;
-    margin-top: 10px;
   }
 
   canvas {
     width: 100%;
     height: 80px;
-    background: #020617;
-    border-radius: 10px;
-    margin-top: 12px;
+    margin: 10px 0;
+  }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
   }
 
   .status {
@@ -88,66 +71,74 @@
     color: #94a3b8;
     margin-top: 8px;
   }
-
-  .summary {
-    margin-top: 14px;
-    padding: 12px;
-    background: rgba(37,99,235,0.1);
-    border-radius: 10px;
-    display: none;
-  }
-
-  .apikey {
-    width: 100%;
-    margin-top: 10px;
-    background: #020617;
-    color: #e5e7eb;
-    border: 1px solid #334155;
-  }
 </style>
 </head>
 
 <body>
 <div class="app">
   <h1>Notes by Enzo</h1>
-  <div class="subtitle">Hear it. See it. Remember it.</div>
+  <div class="subtitle">Local brain. Cloud memory.</div>
 
   <div class="controls">
     <button id="startBtn">🎙 Start</button>
     <button id="stopBtn" disabled>⏹ Stop</button>
-    <button id="aiBtn" class="secondary">🧠 AI Summary</button>
-    <button id="clearBtn" class="secondary">🧹 Clear</button>
   </div>
 
   <canvas id="waveform"></canvas>
 
-  <textarea id="notes" placeholder="Speaker-labeled notes appear here..."></textarea>
-
-  <input
-    id="apiKey"
-    class="apikey"
-    placeholder="Optional: Paste AI API Key for real summaries"
-    type="password"
-  />
+  <textarea id="notes" placeholder="Your cloud-synced notes live here…"></textarea>
 
   <div class="status" id="status">Idle</div>
-  <div class="summary" id="summary"></div>
 </div>
 
 <script>
-/* ---------- Persistence ---------- */
-const notes = document.getElementById("notes");
-const apiKeyInput = document.getElementById("apiKey");
-notes.value = localStorage.getItem("enzo-notes") || "";
-apiKeyInput.value = localStorage.getItem("enzo-key") || "";
+/* ---------- Firebase Config ---------- */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+};
 
-notes.oninput = () => localStorage.setItem("enzo-notes", notes.value);
-apiKeyInput.oninput = () => localStorage.setItem("enzo-key", apiKeyInput.value);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* ---------- Device Identity ---------- */
+let deviceId = localStorage.getItem("enzo-device");
+if (!deviceId) {
+  deviceId = crypto.randomUUID();
+  localStorage.setItem("enzo-device", deviceId);
+}
+
+const docRef = db.collection("notes").doc(deviceId);
+
+/* ---------- Elements ---------- */
+const notes = document.getElementById("notes");
+const statusText = document.getElementById("status");
+
+/* ---------- Load From Cloud ---------- */
+docRef.get().then(doc => {
+  if (doc.exists) {
+    notes.value = doc.data().text || "";
+  }
+});
+
+/* ---------- Save To Cloud ---------- */
+let saveTimeout;
+notes.addEventListener("input", () => {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    docRef.set({
+      text: notes.value,
+      updated: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    statusText.textContent = "Saved to cloud ☁️";
+  }, 600);
+});
 
 /* ---------- Waveform ---------- */
 const canvas = document.getElementById("waveform");
 const ctx = canvas.getContext("2d");
-let analyser, dataArray, audioCtx, source;
+let analyser, dataArray, audioCtx;
 
 function drawWave() {
   requestAnimationFrame(drawWave);
@@ -155,17 +146,14 @@ function drawWave() {
 
   analyser.getByteTimeDomainData(dataArray);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.lineWidth = 2;
   ctx.strokeStyle = "#2563eb";
   ctx.beginPath();
 
-  const slice = canvas.width / dataArray.length;
+  let slice = canvas.width / dataArray.length;
   let x = 0;
 
   for (let i = 0; i < dataArray.length; i++) {
-    const v = dataArray[i] / 128.0;
-    const y = (v * canvas.height) / 2;
+    let y = (dataArray[i] / 128) * canvas.height / 2;
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     x += slice;
   }
@@ -173,37 +161,21 @@ function drawWave() {
   ctx.stroke();
 }
 
-/* ---------- Speech + Speaker Detection ---------- */
+/* ---------- Speech ---------- */
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const statusText = document.getElementById("status");
-let recognition;
-let speaker = 1;
-let lastTime = Date.now();
+const recognition = new SpeechRecognition();
+recognition.continuous = true;
 
-if (SpeechRecognition) {
-  recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = false;
-
-  recognition.onresult = e => {
-    const now = Date.now();
-    if (now - lastTime > 2000) speaker = speaker === 1 ? 2 : 1;
-    lastTime = now;
-
-    const text = e.results[e.results.length - 1][0].transcript.trim();
-    notes.value += `\nSpeaker ${speaker}: ${text}.`;
-    localStorage.setItem("enzo-notes", notes.value);
-  };
-}
+recognition.onresult = e => {
+  const text = e.results[e.results.length - 1][0].transcript.trim();
+  notes.value += " " + text + ".";
+};
 
 startBtn.onclick = async () => {
-  statusText.textContent = "Listening…";
-
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   audioCtx = new AudioContext();
   analyser = audioCtx.createAnalyser();
-  source = audioCtx.createMediaStreamSource(stream);
-  source.connect(analyser);
+  audioCtx.createMediaStreamSource(stream).connect(analyser);
 
   analyser.fftSize = 2048;
   dataArray = new Uint8Array(analyser.fftSize);
@@ -214,6 +186,7 @@ startBtn.onclick = async () => {
   drawWave();
   recognition.start();
 
+  statusText.textContent = "Listening…";
   startBtn.disabled = true;
   stopBtn.disabled = false;
 };
@@ -225,44 +198,6 @@ stopBtn.onclick = () => {
   statusText.textContent = "Stopped";
   startBtn.disabled = false;
   stopBtn.disabled = true;
-};
-
-/* ---------- AI SUMMARY ---------- */
-aiBtn.onclick = async () => {
-  const key = apiKeyInput.value.trim();
-  if (!key) {
-    alert("Add an API key to use AI summaries.");
-    return;
-  }
-
-  statusText.textContent = "Thinking…";
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + key
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: "Summarize the following notes clearly." },
-        { role: "user", content: notes.value }
-      ]
-    })
-  });
-
-  const data = await res.json();
-  summary.innerText = data.choices[0].message.content;
-  summary.style.display = "block";
-  statusText.textContent = "Summary ready.";
-};
-
-clearBtn.onclick = () => {
-  if (!confirm("Clear everything?")) return;
-  notes.value = "";
-  summary.style.display = "none";
-  localStorage.clear();
 };
 </script>
 </body>
