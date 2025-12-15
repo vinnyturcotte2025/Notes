@@ -1,30 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Notes by Enzo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#020617" />
-
-<!-- PWA Manifest -->
-<link rel="manifest" href="data:application/json,{
-  &quot;name&quot;:&quot;Notes by Enzo&quot;,
-  &quot;short_name&quot;:&quot;EnzoNotes&quot;,
-  &quot;start_url&quot;:&quot;.&quot;,
-  &quot;display&quot;:&quot;standalone&quot;,
-  &quot;background_color&quot;:&quot;#020617&quot;,
-  &quot;theme_color&quot;:&quot;#020617&quot;
-}">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 * { box-sizing: border-box; }
-body { margin:0; font-family:Arial,sans-serif; background:#020617; color:#e5e7eb; }
+body { margin:0; font-family: Arial,sans-serif; background:#020617; color:#e5e7eb; }
 .layout { display:flex; height:100vh; }
 .sidebar { width:270px; background:#020617; border-right:1px solid #1e293b; padding:16px; overflow-y:auto; }
 .main { flex:1; padding:20px; display:flex; flex-direction:column; }
@@ -39,18 +21,11 @@ textarea { flex:1; width:100%; resize:none; padding:14px; border-radius:12px; bo
 .status, .muted { text-align:center; font-size:0.8rem; color:#94a3b8; margin-top:6px; }
 </style>
 </head>
-
 <body>
 <div class="layout">
-
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <h2>Notes by Enzo</h2>
-    <section>
-      <h3>Account</h3>
-      <button id="loginBtn">🔐 Login</button>
-      <button id="logoutBtn" hidden>🚪 Logout</button>
-    </section>
     <section>
       <h3>Notebooks</h3>
       <select id="books"></select>
@@ -70,11 +45,11 @@ textarea { flex:1; width:100%; resize:none; padding:14px; border-radius:12px; bo
     <section>
       <h3>Intelligence</h3>
       <button id="aiSummary">🧠 AI Summary</button>
-      <button id="historyBtn">🕓 Version History</button>
+      <button id="historyBtn">🕓 History</button>
     </section>
     <section>
       <h3>Settings</h3>
-      <input id="apiKey" type="password" placeholder="AI API Key" />
+      <input id="apiKey" type="password" placeholder="AI API Key">
     </section>
   </aside>
 
@@ -84,23 +59,16 @@ textarea { flex:1; width:100%; resize:none; padding:14px; border-radius:12px; bo
     <textarea id="notes" placeholder="Speak. Think. Remember."></textarea>
     <div class="status" id="status">Idle</div>
   </main>
-
 </div>
 
 <script>
-// 🔥 FIREBASE CONFIG — REPLACE WITH YOUR OWN
-firebase.initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID"
-});
+// -------------------- Local Storage Helpers --------------------
+function saveNotebooks(data) { localStorage.setItem('notebooks', JSON.stringify(data)); }
+function loadNotebooks() { return JSON.parse(localStorage.getItem('notebooks') || '{}'); }
+function saveCurrentBook(id) { localStorage.setItem('currentBook', id); }
+function loadCurrentBook() { return localStorage.getItem('currentBook'); }
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+// -------------------- Elements --------------------
 const booksEl = document.getElementById("books");
 const notesEl = document.getElementById("notes");
 const clipsDiv = document.getElementById("clips");
@@ -108,104 +76,110 @@ const recStatus = document.getElementById("recStatus");
 const statusEl = document.getElementById("status");
 const apiKeyInput = document.getElementById("apiKey");
 
-let user = null;
-let currentBook = null;
+let notebooks = loadNotebooks();
+let currentBook = loadCurrentBook();
+let saveTimer;
+let audioChunks = [];
+let mediaRecorder;
 
-// ---------------- AUTH ----------------
-loginBtn.onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-logoutBtn.onclick = () => auth.signOut();
-
-auth.onAuthStateChanged(u => {
-  user = u;
-  loginBtn.hidden = !!u;
-  logoutBtn.hidden = !u;
-  if (u) loadBooks();
-  else {
-    notesEl.value = "";
-    booksEl.innerHTML = "";
-    currentBook = null;
+// -------------------- Notebook Management --------------------
+function updateDropdown() {
+  booksEl.innerHTML = "";
+  for(const id in notebooks){
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = notebooks[id].name;
+    booksEl.appendChild(opt);
   }
-});
+  if(currentBook && notebooks[currentBook]){
+    booksEl.value = currentBook;
+    notesEl.value = notebooks[currentBook].text || "";
+    renderClips();
+  } else {
+    const first = Object.keys(notebooks)[0];
+    if(first) selectBook(first);
+  }
+}
 
-// ---------------- NOTEBOOKS ----------------
-function loadBooks() {
-  db.collection("users").doc(user.uid).collection("notebooks")
-    .onSnapshot(snap => {
-      booksEl.innerHTML = "";
-      snap.forEach(d => {
-        const opt = document.createElement("option");
-        opt.value = d.id;
-        opt.textContent = d.data().name;
-        booksEl.appendChild(opt);
-      });
-      if (!currentBook && snap.docs.length > 0) selectBook(snap.docs[0].id);
-    });
+function selectBook(id){
+  currentBook = id;
+  saveCurrentBook(id);
+  notesEl.value = notebooks[id].text || "";
+  renderClips();
 }
 
 booksEl.onchange = e => selectBook(e.target.value);
 
-function selectBook(id) {
-  currentBook = id;
-  db.collection("users").doc(user.uid).collection("notebooks").doc(id)
-    .onSnapshot(doc => {
-      notesEl.value = doc.data()?.text || "";
-    });
-  loadClips();
+document.getElementById("newBook").onclick = () => {
+  const name = prompt("Notebook name?");
+  if(!name) return;
+  const id = 'book_' + Date.now();
+  notebooks[id] = { name, text:"", audio:[], history:[] };
+  saveNotebooks(notebooks);
+  selectBook(id);
+  updateDropdown();
 }
 
-document.getElementById("newBook").onclick = async () => {
-  const name = prompt("Notebook name?");
-  if (!name) return;
-  const ref = await db.collection("users").doc(user.uid).collection("notebooks").add({
-    name,
-    text: "",
-    sharedWith: []
-  });
-  selectBook(ref.id);
-};
-
+// Share notebook placeholder
 document.getElementById("shareBook").onclick = () => {
-  alert("Sharing requires email/UID mapping. Placeholder for now.");
+  alert("Sharing is not available in local version.");
 };
 
-// ---------------- NOTES SAVE ----------------
-let saveTimer;
+// -------------------- Notes Save --------------------
 notesEl.oninput = () => {
-  if (!user || !currentBook) return;
+  if(!currentBook) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    const ref = db.collection("users").doc(user.uid).collection("notebooks").doc(currentBook);
-    ref.set({ text: notesEl.value, updated: Date.now() }, { merge: true });
-    ref.collection("history").add({ text: notesEl.value, ts: Date.now() });
+    notebooks[currentBook].text = notesEl.value;
+    notebooks[currentBook].history.push({text:notesEl.value, ts:Date.now()});
+    saveNotebooks(notebooks);
   }, 500);
-};
+}
 
-// ---------------- AUDIO RECORDING ----------------
-let mediaRecorder, audioChunks = [];
-
+// -------------------- Audio Recording --------------------
 document.getElementById("startRec").onclick = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const rec = new SR();
-  rec.continuous = true;
-  rec.onresult = e => {
-    const t = new Date().toLocaleTimeString();
-    notesEl.value += `\n[${t}] Speaker: ${e.results.at(-1)[0].transcript}`;
-  };
-  rec.start();
-
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
   mediaRecorder = new MediaRecorder(stream);
   audioChunks = [];
   mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  mediaRecorder.onstop = () => {
+    if(!currentBook) return;
+    notebooks[currentBook].audio.push({blob: new Blob(audioChunks,{type:'audio/webm'}), ts:Date.now()});
+    saveNotebooks(notebooks);
+    renderClips();
+  }
   mediaRecorder.start();
+  startWave(stream);
+  recStatus.textContent = "Recording…";
+}
 
+document.getElementById("stopRec").onclick = () => {
+  if(mediaRecorder && mediaRecorder.state==="recording") mediaRecorder.stop();
+  recStatus.textContent = "Idle";
+}
+
+// -------------------- Playback --------------------
+function renderClips(){
+  clipsDiv.innerHTML = "";
+  if(!currentBook || !notebooks[currentBook].audio.length){
+    clipsDiv.innerHTML="No clips yet"; return;
+  }
+  notebooks[currentBook].audio.slice().reverse().forEach(a=>{
+    const b = document.createElement("button");
+    b.textContent = "▶ " + new Date(a.ts).toLocaleTimeString();
+    b.onclick = () => { const audio = new Audio(URL.createObjectURL(a.blob)); audio.play(); };
+    clipsDiv.appendChild(b);
+  });
+}
+
+// -------------------- Waveform --------------------
+function startWave(stream){
   const ac = new AudioContext();
   const analyser = ac.createAnalyser();
   ac.createMediaStreamSource(stream).connect(analyser);
   const canvas = document.getElementById("wave");
   const c = canvas.getContext("2d");
   const data = new Uint8Array(analyser.fftSize = 2048);
-
   (function draw(){
     requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(data);
@@ -219,74 +193,35 @@ document.getElementById("startRec").onclick = async () => {
     c.strokeStyle="#2563eb";
     c.stroke();
   })();
-
-  recStatus.textContent = "Recording…";
-};
-
-document.getElementById("stopRec").onclick = async () => {
-  recStatus.textContent = "Idle";
-  if (!mediaRecorder) return;
-  mediaRecorder.stop();
-  mediaRecorder.onstop = async () => {
-    const blob = new Blob(audioChunks, { type: "audio/webm" });
-    const ts = Date.now();
-    const ref = storage.ref(`audio/${user.uid}/${currentBook}/${ts}.webm`);
-    await ref.put(blob);
-    const url = await ref.getDownloadURL();
-    await db.collection("users").doc(user.uid).collection("notebooks").doc(currentBook)
-      .collection("audio").add({ url, timestamp: ts });
-    loadClips();
-  };
-};
-
-// ---------------- PLAYBACK ----------------
-function loadClips() {
-  clipsDiv.innerHTML = "";
-  db.collection("users").doc(user.uid).collection("notebooks").doc(currentBook)
-    .collection("audio").orderBy("timestamp","desc")
-    .onSnapshot(snap => {
-      clipsDiv.innerHTML = "";
-      snap.forEach(d => {
-        const b = document.createElement("button");
-        b.textContent = "▶ " + new Date(d.data().timestamp).toLocaleTimeString();
-        b.onclick = () => new Audio(d.data().url).play();
-        clipsDiv.appendChild(b);
-      });
-      if(snap.empty) clipsDiv.innerHTML="No clips yet";
-    });
 }
 
-// ---------------- AI SUMMARY ----------------
+// -------------------- AI Summary --------------------
 document.getElementById("aiSummary").onclick = async () => {
   const key = apiKeyInput.value.trim();
   if(!key){
-    alert("Offline summary: "+notesEl.value.split(/[.!?]/).slice(0,3).join(". "));
+    alert("Offline summary:\n"+(notesEl.value.split(/[.!?]/).slice(0,3).join(". ")));
     return;
   }
   const r = await fetch("https://api.openai.com/v1/chat/completions",{
     method:"POST",
-    headers:{
-      "Authorization":"Bearer "+key,
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      model:"gpt-4o-mini",
-      messages:[{role:"user", content:notesEl.value}]
-    })
+    headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
+    body:JSON.stringify({model:"gpt-4o-mini",messages:[{role:"user",content:notesEl.value}]})
   });
   const j = await r.json();
   alert(j.choices[0].message.content);
-};
+}
 
-// ---------------- HISTORY ----------------
-document.getElementById("historyBtn").onclick = async () => {
-  const snap = await db.collection("users").doc(user.uid).collection("notebooks").doc(currentBook)
-    .collection("history").orderBy("ts","desc").limit(5).get();
-  let out = "Recent versions:\n\n";
-  snap.forEach(d => out += new Date(d.data().ts).toLocaleString()+"\n");
+// -------------------- History --------------------
+document.getElementById("historyBtn").onclick = () => {
+  if(!currentBook) return;
+  const h = notebooks[currentBook].history.slice(-5).reverse();
+  let out = "Recent Versions:\n\n";
+  h.forEach(v=> out += new Date(v.ts).toLocaleString()+"\n");
   alert(out);
-};
+}
+
+// -------------------- Initialize --------------------
+updateDropdown();
 </script>
 </body>
 </html>
-
