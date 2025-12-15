@@ -230,8 +230,10 @@ function loadBooks() {
         o.textContent = d.data().name;
         books.appendChild(o);
       });
-      if (!currentBook && snap.docs[0])
-        selectBook(snap.docs[0].id);
+      // AUTO SELECT FIRST BOOK
+      if (!currentBook && snap.docs.length > 0) {
+        selectBook(snap.docs[0].id);  // <- this is critical
+      }
     });
 }
 
@@ -260,16 +262,18 @@ shareBook.onclick = () => {
 /* ---------- SAVE + HISTORY ---------- */
 let saveTimer;
 notes.oninput = () => {
+  if (!user || !currentBook) return;  // prevents errors
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     const ref = db.collection("users").doc(user.uid)
       .collection("notebooks").doc(currentBook);
+    console.log("Typing detected:", notes.value.slice(0,30));
 
     ref.set({ text: notes.value, updated: Date.now() }, { merge: true });
     ref.collection("history").add({ text: notes.value, ts: Date.now() });
   }, 500);
 };
-
+  
 /* ---------- SPEECH + SPEAKER ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const rec = new SR();
