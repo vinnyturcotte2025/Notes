@@ -84,7 +84,11 @@
     canvas.height = canvas.offsetHeight;
     const ctx = canvas.getContext('2d');
 
-    let audioContext, analyser, source, mediaRecorder, animationId;
+    let audioContext;
+    let analyser;
+    let source;
+    let mediaRecorder;
+    let animationId;
 
     function drawWave() {
       const bufferLength = analyser.fftSize;
@@ -107,7 +111,8 @@
         for (let i = 0; i < bufferLength; i++) {
           const v = dataArray[i] / 128.0;
           const y = (v * canvas.height) / 2;
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
           x += sliceWidth;
         }
 
@@ -119,9 +124,13 @@
     }
 
     startBtn.onclick = async () => {
+      errorEl.textContent = '';
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
         audioContext = new AudioContext();
+        await audioContext.resume(); // REQUIRED for Chrome / Chromebook
+
         analyser = audioContext.createAnalyser();
         analyser.fftSize = 2048;
 
@@ -140,6 +149,7 @@
         stopBtn.disabled = false;
       } catch (err) {
         errorEl.textContent = 'Microphone access denied or unavailable.';
+        console.error(err);
       }
     };
 
