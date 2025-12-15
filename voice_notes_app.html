@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Notes</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 900px;
+      width: 100%;
+      padding: 24px;
+      display: grid;
+      gap: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+    }
+    canvas {
+      width: 100%;
+      height: 160px;
+      background: #020617;
+      border-radius: 16px;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+    button {
+      padding: 14px 24px;
+      border-radius: 16px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .start { background: #38bdf8; color: #020617; }
+    .stop { background: #fb7185; color: white; }
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      background: #020617;
+      color: #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+      border: none;
+      resize: none;
+      font-size: 1rem;
+    }
+    .error { color: #fb7185; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>🎙️ Voice → Notes</h1>
+    <canvas id="wave"></canvas>
+    <div class="controls">
+      <button id="start" class="start">Start Recording</button>
+      <button id="stop" class="stop" disabled>Stop Recording</button>
+    </div>
+    <textarea id="notes" placeholder="Your spoken notes appear here…"></textarea>
+    <div id="error" class="error"></div>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+    const canvas = document.getElementById('wave');
+    const notes = document.getElementById('notes');
+    const errorEl = document.getElementById('error');
+
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    const ctx = canvas.getContext('2d');
+
+    let audioContext, analyser, source, mediaRecorder, animationId;
+
+    function drawWave() {
+      const bufferLength = analyser.fftSize;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        animationId = requestAnimationFrame(draw);
+        analyser.getByteTimeDomainData(dataArray);
+
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.beginPath();
+
+        let sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          x += sliceWidth;
+        }
+
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
+      }
+
+      draw();
+    }
+
+    startBtn.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new AudioContext();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 2048;
+
+        source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
+
+        mediaRecorder.ondataavailable = () => {
+          notes.value += '\n• Voice captured at ' + new Date().toLocaleTimeString();
+        };
+
+        drawWave();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+      } catch (err) {
+        errorEl.textContent = 'Microphone access denied or unavailable.';
+      }
+    };
+
+    stopBtn.onclick = () => {
+      mediaRecorder?.stop();
+      cancelAnimationFrame(animationId);
+      audioContext?.close();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    };
+  </script>
+</body>
+</html>
