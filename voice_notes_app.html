@@ -2,164 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Voice Notes</title>
+  <title>Notes by Enzo</title>
+
   <style>
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: #0f172a;
       color: #e5e7eb;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
     }
+
     .app {
-      max-width: 900px;
-      width: 100%;
+      width: 90%;
+      max-width: 700px;
+      background: #020617;
       padding: 24px;
-      display: grid;
-      gap: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
     }
+
     h1 {
       text-align: center;
+      margin-bottom: 16px;
       font-size: 2rem;
+      letter-spacing: 1px;
     }
-    canvas {
-      width: 100%;
-      height: 160px;
-      background: #020617;
-      border-radius: 16px;
-    }
+
     .controls {
       display: flex;
       justify-content: center;
-      gap: 16px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
+
     button {
-      padding: 14px 24px;
-      border-radius: 16px;
-      border: none;
+      padding: 10px 16px;
       font-size: 1rem;
-      font-weight: 600;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      background: #2563eb;
+      color: white;
     }
-    .start { background: #38bdf8; color: #020617; }
-    .stop { background: #fb7185; color: white; }
+
+    button:disabled {
+      background: #475569;
+      cursor: not-allowed;
+    }
+
     textarea {
       width: 100%;
-      min-height: 220px;
+      height: 300px;
       background: #020617;
       color: #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
-      border: none;
-      resize: none;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
       font-size: 1rem;
+      resize: none;
     }
-    .error { color: #fb7185; text-align: center; }
+
+    .status {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
   </style>
 </head>
+
 <body>
   <div class="app">
-    <h1>🎙️ Voice → Notes</h1>
-    <canvas id="wave"></canvas>
+    <h1>Notes by Enzo</h1>
+
     <div class="controls">
-      <button id="start" class="start">Start Recording</button>
-      <button id="stop" class="stop" disabled>Stop Recording</button>
+      <button id="startBtn">Start Recording</button>
+      <button id="stopBtn" disabled>Stop Recording</button>
     </div>
-    <textarea id="notes" placeholder="Your spoken notes appear here…"></textarea>
-    <div id="error" class="error"></div>
+
+    <textarea id="notes" placeholder="Your spoken notes will appear here..."></textarea>
+
+    <div class="status" id="status">Idle</div>
   </div>
 
   <script>
-    const startBtn = document.getElementById('start');
-    const stopBtn = document.getElementById('stop');
-    const canvas = document.getElementById('wave');
-    const notes = document.getElementById('notes');
-    const errorEl = document.getElementById('error');
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const notesArea = document.getElementById("notes");
+    const statusText = document.getElementById("status");
 
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    const ctx = canvas.getContext('2d');
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    let audioContext;
-    let analyser;
-    let source;
-    let mediaRecorder;
-    let animationId;
+    if (!SpeechRecognition) {
+      statusText.textContent =
+        "Speech recognition not supported in this browser.";
+      startBtn.disabled = true;
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
 
-    function drawWave() {
-      const bufferLength = analyser.fftSize;
-      const dataArray = new Uint8Array(bufferLength);
+      let finalTranscript = "";
 
-      function draw() {
-        animationId = requestAnimationFrame(draw);
-        analyser.getByteTimeDomainData(dataArray);
-
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#38bdf8';
-        ctx.beginPath();
-
-        let sliceWidth = canvas.width / bufferLength;
-        let x = 0;
-
-        for (let i = 0; i < bufferLength; i++) {
-          const v = dataArray[i] / 128.0;
-          const y = (v * canvas.height) / 2;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-          x += sliceWidth;
-        }
-
-        ctx.lineTo(canvas.width, canvas.height / 2);
-        ctx.stroke();
-      }
-
-      draw();
-    }
-
-    startBtn.onclick = async () => {
-      errorEl.textContent = '';
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-        audioContext = new AudioContext();
-        await audioContext.resume(); // REQUIRED for Chrome / Chromebook
-
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 2048;
-
-        source = audioContext.createMediaStreamSource(stream);
-        source.connect(analyser);
-
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.start();
-
-        mediaRecorder.ondataavailable = () => {
-          notes.value += '\n• Voice captured at ' + new Date().toLocaleTimeString();
-        };
-
-        drawWave();
+      recognition.onstart = () => {
+        statusText.textContent = "Listening...";
         startBtn.disabled = true;
         stopBtn.disabled = false;
-      } catch (err) {
-        errorEl.textContent = 'Microphone access denied or unavailable.';
-        console.error(err);
-      }
-    };
+      };
 
-    stopBtn.onclick = () => {
-      mediaRecorder?.stop();
-      cancelAnimationFrame(animationId);
-      audioContext?.close();
-      startBtn.disabled = false;
-      stopBtn.disabled = true;
-    };
+      recognition.onend = () => {
+        statusText.textContent = "Stopped";
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      };
+
+      recognition.onerror = (event) => {
+        statusText.textContent = "Error: " + event.error;
+      };
+
+      recognition.onresult = (event) => {
+        let interimTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + " ";
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        notesArea.value = finalTranscript + interimTranscript;
+      };
+
+      startBtn.onclick = () => {
+        recognition.start();
+      };
+
+      stopBtn.onclick = () => {
+        recognition.stop();
+      };
+    }
   </script>
 </body>
 </html>
+
