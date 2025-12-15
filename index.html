@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <title>Notes by Enzo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#020617" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#020617">
-
+<!-- PWA Manifest -->
 <link rel="manifest" href="data:application/json,{
   &quot;name&quot;:&quot;Notes by Enzo&quot;,
   &quot;short_name&quot;:&quot;EnzoNotes&quot;,
@@ -16,173 +16,331 @@
   &quot;theme_color&quot;:&quot;#020617&quot;
 }">
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
 <style>
+/* ---------- GLOBAL ---------- */
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
   background: #020617;
   color: #e5e7eb;
   font-family: Arial, Helvetica, sans-serif;
 }
-.app {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
+
+/* ---------- LAYOUT ---------- */
+.layout {
+  display: flex;
+  height: 100vh;
 }
-button, select, input {
+
+.sidebar {
+  width: 270px;
+  background: #020617;
+  border-right: 1px solid #1e293b;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar h2 {
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.sidebar section {
+  margin-bottom: 18px;
+}
+
+.sidebar h3 {
+  margin: 6px 0;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sidebar button,
+.sidebar select,
+.sidebar input {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
   background: #2563eb;
   color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
+  font-size: 0.85rem;
 }
-textarea {
-  width: 100%;
-  height: 260px;
-  background: transparent;
-  color: #e5e7eb;
+
+.sidebar input {
+  background: #020617;
   border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 12px;
 }
-canvas { width: 100%; height: 70px; }
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+
+.muted {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.clip-list button {
+  background: #475569;
+  font-size: 0.75rem;
+}
+
+/* ---------- MAIN ---------- */
+canvas {
+  height: 70px;
+  width: 100%;
   margin-bottom: 8px;
 }
+
+textarea {
+  flex: 1;
+  width: 100%;
+  resize: none;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #e5e7eb;
+  font-size: 1rem;
+}
+
 .status {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #94a3b8;
+  margin-top: 6px;
 }
 </style>
 </head>
 
 <body>
-<div class="app">
-  <h1>Notes by Enzo</h1>
+<div class="layout">
 
-  <div class="controls">
-    <button id="loginBtn">🔐 Login</button>
-    <button id="logoutBtn" style="display:none">🚪 Logout</button>
-    <select id="notebooks"></select>
-    <button id="newNotebook">➕ Notebook</button>
-    <button id="startBtn">🎙 Start</button>
-    <button id="stopBtn">⏹ Stop</button>
-    <button id="aiBtn">🧠 Summarize</button>
-  </div>
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <h2>Notes by Enzo</h2>
 
-  <canvas id="wave"></canvas>
-  <textarea id="notes"></textarea>
+    <section>
+      <h3>Account</h3>
+      <button id="loginBtn">🔐 Login</button>
+      <button id="logoutBtn" hidden>🚪 Logout</button>
+    </section>
 
-  <input id="apiKey" type="password" placeholder="AI API Key (optional)" />
-  <div class="status" id="status">Idle</div>
+    <section>
+      <h3>Notebooks</h3>
+      <select id="books"></select>
+      <button id="newBook">➕ New Notebook</button>
+      <button id="shareBook">🤝 Share Notebook</button>
+    </section>
+
+    <section>
+      <h3>Recording</h3>
+      <button id="startRec">🎙 Start</button>
+      <button id="stopRec">⏹ Stop</button>
+      <div id="recStatus" class="muted">Idle</div>
+    </section>
+
+    <section>
+      <h3>Playback</h3>
+      <div id="clips" class="clip-list muted">No clips yet</div>
+    </section>
+
+    <section>
+      <h3>Intelligence</h3>
+      <button id="aiSummary">🧠 AI Summary</button>
+      <button id="historyBtn">🕓 Version History</button>
+    </section>
+
+    <section>
+      <h3>Settings</h3>
+      <input id="apiKey" type="password" placeholder="AI API Key" />
+    </section>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+    <canvas id="wave"></canvas>
+    <textarea id="notes" placeholder="Speak. Think. Remember."></textarea>
+    <div class="status" id="status">Idle</div>
+  </main>
+
 </div>
 
 <script>
-/* 🔥 FIREBASE CONFIG — REPLACE ME */
+/* ======================================================
+   🔥 FIREBASE CONFIG — REPLACE WITH YOUR OWN
+====================================================== */
 firebase.initializeApp({
-  apiKey: "YOUR_KEY",
+  apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID"
 });
 
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage();
 
-/* 🔐 AUTH */
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+/* ---------- ELEMENTS ---------- */
+const notes = document.getElementById("notes");
+const books = document.getElementById("books");
+const clipsDiv = document.getElementById("clips");
+const statusText = document.getElementById("status");
+const recStatus = document.getElementById("recStatus");
+const apiKeyInput = document.getElementById("apiKey");
 
-loginBtn.onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+/* ---------- AUTH ---------- */
+let user, currentBook;
+
+loginBtn.onclick = () =>
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+
 logoutBtn.onclick = () => auth.signOut();
 
-let user, currentNotebook;
-
-/* 🗂️ NOTEBOOKS */
-const notebookSelect = document.getElementById("notebooks");
-const notes = document.getElementById("notes");
-
 auth.onAuthStateChanged(u => {
-  if (!u) return;
   user = u;
-  loginBtn.style.display = "none";
-  logoutBtn.style.display = "inline";
-  loadNotebooks();
+  loginBtn.hidden = !!u;
+  logoutBtn.hidden = !u;
+  if (u) loadBooks();
 });
 
-function loadNotebooks() {
-  db.collection("users").doc(user.uid).collection("notebooks")
+/* ---------- NOTEBOOKS ---------- */
+function loadBooks() {
+  db.collection("users").doc(user.uid)
+    .collection("notebooks")
     .onSnapshot(snap => {
-      notebookSelect.innerHTML = "";
-      snap.forEach(doc => {
-        const opt = document.createElement("option");
-        opt.value = doc.id;
-        opt.textContent = doc.data().name;
-        notebookSelect.appendChild(opt);
+      books.innerHTML = "";
+      snap.forEach(d => {
+        const o = document.createElement("option");
+        o.value = d.id;
+        o.textContent = d.data().name;
+        books.appendChild(o);
       });
-      if (!currentNotebook && snap.docs[0])
-        selectNotebook(snap.docs[0].id);
+      if (!currentBook && snap.docs[0])
+        selectBook(snap.docs[0].id);
     });
 }
 
-function selectNotebook(id) {
-  currentNotebook = id;
+function selectBook(id) {
+  currentBook = id;
   db.collection("users").doc(user.uid)
     .collection("notebooks").doc(id)
-    .onSnapshot(doc => {
-      notes.value = doc.data().text || "";
-    });
+    .onSnapshot(d => notes.value = d.data().text || "");
+  loadClips();
 }
 
-notebookSelect.onchange = e => selectNotebook(e.target.value);
+books.onchange = e => selectBook(e.target.value);
 
-document.getElementById("newNotebook").onclick = () => {
+newBook.onclick = () => {
   const name = prompt("Notebook name?");
   if (!name) return;
   db.collection("users").doc(user.uid)
-    .collection("notebooks").add({ name, text: "", updated: Date.now() });
+    .collection("notebooks")
+    .add({ name, text: "", sharedWith: [] });
 };
 
-/* ☁️ REAL-TIME SAVE + HISTORY */
+shareBook.onclick = () => {
+  alert("Sharing wired — requires user UID mapping (next step).");
+};
+
+/* ---------- SAVE + HISTORY ---------- */
 let saveTimer;
 notes.oninput = () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     const ref = db.collection("users").doc(user.uid)
-      .collection("notebooks").doc(currentNotebook);
+      .collection("notebooks").doc(currentBook);
 
-    ref.set({
-      text: notes.value,
-      updated: Date.now()
-    }, { merge: true });
-
-    ref.collection("history").add({
-      text: notes.value,
-      timestamp: Date.now()
-    });
+    ref.set({ text: notes.value, updated: Date.now() }, { merge: true });
+    ref.collection("history").add({ text: notes.value, ts: Date.now() });
   }, 500);
 };
 
-/* 🎙️ SPEECH */
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.continuous = true;
-recognition.onresult = e => {
-  notes.value += " " + e.results[e.results.length - 1][0].transcript + ".";
+/* ---------- SPEECH + SPEAKER ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const rec = new SR();
+rec.continuous = true;
+let speaker = 1, lastTime = Date.now();
+
+rec.onresult = e => {
+  const now = Date.now();
+  if (now - lastTime > 2000) speaker = speaker === 1 ? 2 : 1;
+  lastTime = now;
+  const t = new Date().toLocaleTimeString();
+  notes.value += `\n[${t}] Speaker ${speaker}: ${e.results.at(-1)[0].transcript}.`;
 };
 
-startBtn.onclick = () => recognition.start();
-stopBtn.onclick = () => recognition.stop();
+/* ---------- AUDIO RECORDING ---------- */
+let mediaRecorder, audioChunks = [];
 
-/* 🌊 WAVEFORM */
-navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+startRec.onclick = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  rec.start();
+
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
+  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  mediaRecorder.start();
+
+  startWave(stream);
+  recStatus.textContent = "Recording…";
+};
+
+stopRec.onclick = () => {
+  rec.stop();
+  mediaRecorder.stop();
+
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(audioChunks, { type: "audio/webm" });
+    const ts = Date.now();
+    const ref = storage.ref(`audio/${user.uid}/${currentBook}/${ts}.webm`);
+    await ref.put(blob);
+    const url = await ref.getDownloadURL();
+
+    await db.collection("users").doc(user.uid)
+      .collection("notebooks").doc(currentBook)
+      .collection("audio")
+      .add({ url, timestamp: ts });
+
+    loadClips();
+    recStatus.textContent = "Idle";
+  };
+};
+
+/* ---------- PLAYBACK ---------- */
+function loadClips() {
+  clipsDiv.innerHTML = "";
+  db.collection("users").doc(user.uid)
+    .collection("notebooks").doc(currentBook)
+    .collection("audio")
+    .orderBy("timestamp", "desc")
+    .onSnapshot(snap => {
+      clipsDiv.innerHTML = "";
+      snap.forEach(d => {
+        const b = document.createElement("button");
+        b.textContent = "▶ " + new Date(d.data().timestamp).toLocaleTimeString();
+        b.onclick = () => new Audio(d.data().url).play();
+        clipsDiv.appendChild(b);
+      });
+    });
+}
+
+/* ---------- WAVEFORM ---------- */
+function startWave(stream) {
   const ctx = new AudioContext();
   const analyser = ctx.createAnalyser();
   ctx.createMediaStreamSource(stream).connect(analyser);
@@ -190,39 +348,58 @@ navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
   const c = canvas.getContext("2d");
   const data = new Uint8Array(analyser.fftSize = 2048);
 
-  function draw() {
+  (function draw() {
     requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(data);
     c.clearRect(0,0,canvas.width,canvas.height);
     c.beginPath();
-    data.forEach((v,i)=> {
-      const x = i / data.length * canvas.width;
-      const y = v / 255 * canvas.height;
-      i ? c.lineTo(x,y) : c.moveTo(x,y);
+    data.forEach((v,i)=>{
+      const x=i/data.length*canvas.width;
+      const y=v/255*canvas.height;
+      i?c.lineTo(x,y):c.moveTo(x,y);
     });
-    c.strokeStyle = "#2563eb";
+    c.strokeStyle="#2563eb";
     c.stroke();
-  }
-  draw();
-});
+  })();
+}
 
-/* 🧠 AI SUMMARY */
-aiBtn.onclick = async () => {
-  const key = apiKey.value.trim();
-  if (!key) return alert("Add API key");
-  const r = await fetch("https://api.openai.com/v1/chat/completions",{
-    method:"POST",
-    headers:{
-      "Authorization":"Bearer "+key,
-      "Content-Type":"application/json"
+/* ---------- AI SUMMARY ---------- */
+aiSummary.onclick = async () => {
+  const key = apiKeyInput.value.trim();
+  if (!key) {
+    alert("Offline summary:\n\n" +
+      notes.value.split(/[.!?]/).slice(0,3).join(". "));
+    return;
+  }
+
+  const r = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + key,
+      "Content-Type": "application/json"
     },
-    body:JSON.stringify({
-      model:"gpt-4o-mini",
-      messages:[{role:"user",content:notes.value}]
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: notes.value }]
     })
   });
-  const d = await r.json();
-  alert(d.choices[0].message.content);
+
+  const j = await r.json();
+  alert(j.choices[0].message.content);
+};
+
+/* ---------- HISTORY ---------- */
+historyBtn.onclick = async () => {
+  const snap = await db.collection("users").doc(user.uid)
+    .collection("notebooks").doc(currentBook)
+    .collection("history")
+    .orderBy("ts", "desc").limit(5).get();
+
+  let out = "Recent Versions:\n\n";
+  snap.forEach(d =>
+    out += new Date(d.data().ts).toLocaleString() + "\n"
+  );
+  alert(out);
 };
 </script>
 </body>
