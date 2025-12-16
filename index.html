@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Note Processor Pro | Step-by-Step Processing</title>
+    <title>Voice Notes Pro | Real Implementation</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -14,224 +14,89 @@
             --gray: #6b7280;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --purple: #8b5cf6;
-            --blue: #3b82f6;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 15px;
-            overflow-x: hidden;
+            padding: 20px;
         }
 
         .app-container {
-            max-width: 1600px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: calc(100vh - 30px);
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 20px 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .app-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .app-title h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .app-title p {
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .header-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Processing Steps */
-        .steps-container {
-            background: white;
-            padding: 20px 30px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .steps {
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .steps::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #e5e7eb;
-            z-index: 1;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e5e7eb;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-            border: 4px solid white;
-        }
-
-        .step.active .step-number {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .step.completed .step-number {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--gray);
+            padding: 30px;
             text-align: center;
         }
 
-        .step.active .step-label {
-            color: var(--primary);
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
 
-        .step.completed .step-label {
-            color: var(--secondary);
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
         }
 
-        /* Main Content */
         .main-content {
             display: flex;
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
+            min-height: 800px;
         }
 
         /* Sidebar */
         .sidebar {
-            width: 320px;
-            min-width: 320px;
+            width: 300px;
             background: var(--light);
-            border-right: 1px solid #e5e7eb;
+            border-right: 1px solid #e2e8f0;
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
-            flex-shrink: 0;
+        .sessions-header {
+            margin-bottom: 25px;
         }
 
-        .sidebar-header h2 {
+        .sessions-header h2 {
             color: var(--dark);
-            font-size: 1.3rem;
-            font-weight: 700;
+            font-size: 1.5rem;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
-        .create-session-btn {
+        #newSessionBtn {
             width: 100%;
             padding: 12px;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .create-session-btn:hover {
+        #newSessionBtn:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
         }
@@ -239,14 +104,13 @@
         .sessions-list {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
         }
 
         .session-item {
             padding: 15px;
             background: white;
-            border-radius: 12px;
-            margin-bottom: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.3s;
@@ -254,7 +118,6 @@
 
         .session-item:hover {
             border-color: var(--primary);
-            transform: translateX(5px);
         }
 
         .session-item.active {
@@ -263,103 +126,73 @@
         }
 
         .session-title {
-            font-size: 1.1rem;
             font-weight: 600;
             color: var(--dark);
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-bottom: 5px;
         }
 
-        .note-count {
-            background: var(--primary);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-        }
-
-        .session-date {
+        .session-time {
             font-size: 0.85rem;
             color: var(--gray);
         }
 
-        /* Main Content Area */
+        /* Main Content */
         .content-area {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        /* Step Content */
-        .step-content {
-            flex: 1;
-            overflow-y: auto;
             padding: 30px;
-            display: none;
-        }
-
-        .step-content.active {
-            display: block;
-        }
-
-        /* Step 1: Recording */
-        .recording-container {
             display: flex;
             flex-direction: column;
-            gap: 30px;
         }
 
-        .recording-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .recording-header h2 {
-            font-size: 1.8rem;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .recording-header p {
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Waveform Visualization - FIXED */
-        .waveform-section {
+        .status-bar {
             background: var(--light);
-            border-radius: 16px;
-            padding: 25px;
-            border: 2px solid #e5e7eb;
-        }
-
-        .waveform-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .waveform-header h3 {
-            font-size: 1.3rem;
-            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-bar.recording .status-indicator {
+            background: var(--danger);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Recording Section */
+        .recording-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
         .waveform-container {
-            height: 200px;
+            flex: 1;
             background: #1a1a2e;
-            border-radius: 12px;
-            position: relative;
+            border-radius: 15px;
             overflow: hidden;
+            position: relative;
+            min-height: 200px;
         }
 
         #waveformCanvas {
@@ -368,70 +201,6 @@
             display: block;
         }
 
-        .waveform-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* Voice Separation */
-        .voice-separation {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            border: 2px solid #e5e7eb;
-        }
-
-        .voice-separation h3 {
-            font-size: 1.3rem;
-            color: var(--dark);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .voice-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .voice-item {
-            padding: 15px;
-            background: var(--light);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .voice-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
-
-        .voice-info {
-            flex: 1;
-        }
-
-        .voice-name {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-
-        .voice-stats {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        /* Recording Controls */
         .recording-controls {
             display: flex;
             justify-content: center;
@@ -454,2015 +223,184 @@
             justify-content: center;
         }
 
-        .record-btn {
+        #recordBtn {
             background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
             color: white;
         }
 
-        .record-btn:hover:not(:disabled) {
+        #recordBtn:hover {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             transform: translateY(-2px);
         }
 
-        .record-btn.recording {
+        #recordBtn.recording {
             background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
             animation: pulse 2s infinite;
         }
 
-        .record-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .next-btn {
+        #processBtn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
         }
 
-        .next-btn:hover:not(:disabled) {
+        #processBtn:hover:not(:disabled) {
             background: linear-gradient(135deg, var(--primary-dark) 0%, #3730a3 100%);
             transform: translateY(-2px);
         }
 
-        .next-btn:disabled {
+        #processBtn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(245, 158, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-        }
-
-        /* Step 2: AI Processing */
-        .processing-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .processing-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .processing-header h2 {
-            font-size: 1.8rem;
-            color: var(--dark);
-            margin-bottom: 15px;
-        }
-
-        .processing-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .processing-step {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            border: 2px solid #e5e7eb;
-            transition: all 0.3s;
-        }
-
-        .processing-step.completed {
-            border-color: var(--secondary);
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .processing-step.active {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .step-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--gray);
-        }
-
-        .processing-step.completed .step-icon {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .processing-step.active .step-icon {
-            background: var(--primary);
-            color: white;
-        }
-
-        .step-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .step-description {
-            color: var(--gray);
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .step-content-details {
+        /* Transcription Display */
+        .transcription-container {
             background: var(--light);
-            border-radius: 12px;
-            padding: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
             max-height: 300px;
             overflow-y: auto;
+        }
+
+        .transcription-container h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #transcriptionDisplay {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--dark);
             white-space: pre-wrap;
         }
 
-        /* Step 3: Notes & Export */
-        .notes-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
+        /* Notes Display */
+        .notes-section {
+            margin-top: 30px;
         }
 
         .notes-header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        .notes-header h2 {
-            font-size: 1.8rem;
+        .notes-header h3 {
+            font-size: 1.3rem;
             color: var(--dark);
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .notes-grid {
+        .notes-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
+            gap: 20px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .note-card {
             background: white;
-            border-radius: 16px;
-            padding: 25px;
-            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
             transition: all 0.3s;
         }
 
         .note-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             border-color: var(--primary);
-        }
-
-        .note-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .note-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark);
         }
 
         .note-time {
             font-size: 0.9rem;
             color: var(--gray);
+            margin-bottom: 10px;
             background: var(--light);
             padding: 5px 12px;
             border-radius: 15px;
-            font-weight: 600;
+            display: inline-block;
+        }
+
+        .note-content {
+            color: var(--dark);
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
 
         .note-tags {
             display: flex;
             gap: 8px;
-            margin-bottom: 15px;
             flex-wrap: wrap;
         }
 
         .tag {
             background: var(--light);
-            padding: 5px 12px;
+            padding: 4px 12px;
             border-radius: 15px;
             font-size: 0.85rem;
             color: var(--gray);
         }
 
-        .tag.task {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--blue);
-        }
-
         .tag.subject {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--purple);
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
         }
 
-        .tag.priority {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        .note-content {
-            color: var(--dark);
-            line-height: 1.7;
-            margin-bottom: 20px;
-            font-size: 1rem;
-        }
-
-        .note-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .note-speaker {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-
-        .speaker-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .tag.task {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
         }
 
         /* Export Controls */
         .export-controls {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            border: 2px solid #e5e7eb;
             margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
         }
 
-        .export-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .export-header h3 {
-            font-size: 1.5rem;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .export-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .export-option {
-            background: var(--light);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-
-        .export-option:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .export-option i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .export-option h4 {
-            font-size: 1.1rem;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .export-option p {
-            font-size: 0.9rem;
-            color: var(--gray);
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .export-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
-            color: white;
+            padding: 12px 25px;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .export-btn:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            transform: translateY(-2px);
-        }
-
-        /* Empty States */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .empty-state .icon {
-            font-size: 4rem;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 1.8rem;
-            color: var(--dark);
-        }
-
-        .empty-state p {
-            font-size: 1.1rem;
-            max-width: 500px;
-            line-height: 1.6;
-        }
-
-        /* Status Bar */
-        .status-bar {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            z-index: 100;
-            border: 2px solid var(--primary);
-        }
-
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--secondary);
-            animation: blink 1.5s infinite;
-        }
-
-        .status-text {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            max-width: 400px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-        }
-
-        .toast-success {
-            background: var(--secondary);
+        #exportPDF {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
             color: white;
         }
 
-        .toast-error {
-            background: var(--danger);
+        #exportTXT {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
         }
 
-        .toast-warning {
-            background: var(--warning);
+        #exportJSON {
+            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
             color: white;
         }
 
-        .toast-info {
-            background: var(--primary);
-            color: white;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                min-width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #e5e7eb;
-                max-height: 300px;
-            }
-            
-            .sessions-list {
-                display: flex;
-                overflow-x: auto;
-                padding-bottom: 15px;
-            }
-            
-            .session-item {
-                min-width: 280px;
-                margin-right: 15px;
-                margin-bottom: 0;
-            }
-            
-            .notes-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .app-container {
-                min-height: calc(100vh - 20px);
-            }
-            
-            .header {
-                padding: 15px 20px;
-            }
-            
-            .app-title h1 {
-                font-size: 1.7rem;
-            }
-            
-            .steps {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-            
-            .step {
-                flex: none;
-                width: calc(50% - 30px);
-            }
-            
-            .step-content {
-                padding: 20px;
-            }
-            
-            .control-btn {
-                min-width: 150px;
-                padding: 15px 25px;
-            }
-            
-            .recording-controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .notes-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .export-options {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-            
-            .header-controls {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .step {
-                width: 100%;
-            }
-            
-            .waveform-container {
-                height: 150px;
-            }
-            
-            .control-btn {
-                width: 100%;
-                min-width: auto;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-</head>
-<body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="app-title">
-                    <div>
-                        <h1><i class="fas fa-microphone-alt"></i> Voice Note Processor Pro</h1>
-                        <p>Step-by-step voice processing with AI analysis and PDF export</p>
-                    </div>
-                </div>
-                <div class="header-controls">
-                    <button class="header-btn" id="exportAllBtn">
-                        <i class="fas fa-file-export"></i> Export All
-                    </button>
-                    <button class="header-btn" id="importBtn">
-                        <i class="fas fa-file-import"></i> Import
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Processing Steps -->
-        <div class="steps-container">
-            <div class="steps">
-                <div class="step active" id="step1">
-                    <div class="step-number">1</div>
-                    <div class="step-label">Record & Separate Voices</div>
-                </div>
-                <div class="step" id="step2">
-                    <div class="step-number">2</div>
-                    <div class="step-label">AI Analysis & Correction</div>
-                </div>
-                <div class="step" id="step3">
-                    <div class="step-number">3</div>
-                    <div class="step-label">Notes & PDF Export</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Sidebar - Sessions -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h2><i class="fas fa-folder"></i> Recording Sessions</h2>
-                    <button class="create-session-btn" id="createSessionBtn">
-                        <i class="fas fa-plus"></i> New Session
-                    </button>
-                </div>
-                <div class="sessions-list" id="sessionsList">
-                    <!-- Sessions will be loaded here -->
-                </div>
-            </aside>
-
-            <!-- Main Content Area -->
-            <main class="content-area">
-                <!-- Step 1: Recording -->
-                <div class="step-content active" id="step1Content">
-                    <div class="recording-container">
-                        <div class="recording-header">
-                            <h2><i class="fas fa-microphone"></i> Record Conversation</h2>
-                            <p>Start recording to capture voices. The system will automatically separate different speakers and detect important information.</p>
-                        </div>
-
-                        <!-- Waveform Visualization -->
-                        <div class="waveform-section">
-                            <div class="waveform-header">
-                                <h3><i class="fas fa-wave-square"></i> Live Audio Visualization</h3>
-                                <div class="status-text" id="recordingStatus">Ready to record</div>
-                            </div>
-                            <div class="waveform-container">
-                                <canvas id="waveformCanvas"></canvas>
-                            </div>
-                            <div class="waveform-labels">
-                                <span>Low Frequency</span>
-                                <span>Live Audio</span>
-                                <span>High Frequency</span>
-                            </div>
-                        </div>
-
-                        <!-- Voice Separation -->
-                        <div class="voice-separation">
-                            <h3><i class="fas fa-users"></i> Voice Separation</h3>
-                            <div class="voice-list" id="voiceList">
-                                <div class="voice-item">
-                                    <div class="voice-color" style="background: #6366f1;"></div>
-                                    <div class="voice-info">
-                                        <div class="voice-name">Speaker 1</div>
-                                        <div class="voice-stats">0 words • 0% of conversation</div>
-                                    </div>
-                                </div>
-                                <div class="voice-item">
-                                    <div class="voice-color" style="background: #10b981;"></div>
-                                    <div class="voice-info">
-                                        <div class="voice-name">Speaker 2</div>
-                                        <div class="voice-stats">0 words • 0% of conversation</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recording Controls -->
-                        <div class="recording-controls">
-                            <button class="control-btn record-btn" id="recordBtn">
-                                <i class="fas fa-microphone"></i> Start Recording
-                            </button>
-                            <button class="control-btn next-btn" id="step1NextBtn" disabled>
-                                <i class="fas fa-arrow-right"></i> Continue to Analysis
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 2: AI Processing -->
-                <div class="step-content" id="step2Content">
-                    <div class="processing-container">
-                        <div class="processing-header">
-                            <h2><i class="fas fa-robot"></i> AI Analysis & Correction</h2>
-                            <p>The system is analyzing your recording, correcting mistakes, and extracting key information.</p>
-                        </div>
-
-                        <div class="processing-steps">
-                            <!-- Step 2.1: Transcribe Audio -->
-                            <div class="processing-step active" id="processStep1">
-                                <div class="step-header">
-                                    <div class="step-icon"><i class="fas fa-keyboard"></i></div>
-                                    <div class="step-title">Transcribing Audio</div>
-                                </div>
-                                <div class="step-description">
-                                    Converting recorded audio to text with speaker identification and timestamps.
-                                </div>
-                                <div class="step-content-details" id="transcriptionDetails">
-                                    Transcription will appear here...
-                                </div>
-                            </div>
-
-                            <!-- Step 2.2: Correct Mistakes -->
-                            <div class="processing-step" id="processStep2">
-                                <div class="step-header">
-                                    <div class="step-icon"><i class="fas fa-spell-check"></i></div>
-                                    <div class="step-title">Correcting Errors</div>
-                                </div>
-                                <div class="step-description">
-                                    Using AI to fix speech recognition errors, grammar mistakes, and improve clarity.
-                                </div>
-                                <div class="step-content-details" id="correctionDetails">
-                                    Corrections will appear here...
-                                </div>
-                            </div>
-
-                            <!-- Step 2.3: Extract Information -->
-                            <div class="processing-step" id="processStep3">
-                                <div class="step-header">
-                                    <div class="step-icon"><i class="fas fa-search"></i></div>
-                                    <div class="step-title">Extracting Key Information</div>
-                                </div>
-                                <div class="step-description">
-                                    Identifying important information, tasks, subjects, and categorizing content.
-                                </div>
-                                <div class="step-content-details" id="extractionDetails">
-                                    Extracted information will appear here...
-                                </div>
-                            </div>
-
-                            <!-- Step 2.4: Organize Notes -->
-                            <div class="processing-step" id="processStep4">
-                                <div class="step-header">
-                                    <div class="step-icon"><i class="fas fa-tasks"></i></div>
-                                    <div class="step-title">Organizing Notes</div>
-                                </div>
-                                <div class="step-description">
-                                    Structuring notes with timestamps, speaker labels, and logical grouping.
-                                </div>
-                                <div class="step-content-details" id="organizationDetails">
-                                    Organized notes will appear here...
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Processing Controls -->
-                        <div class="recording-controls" style="margin-top: 40px;">
-                            <button class="control-btn" id="step2BackBtn">
-                                <i class="fas fa-arrow-left"></i> Back to Recording
-                            </button>
-                            <button class="control-btn next-btn" id="step2NextBtn" disabled>
-                                <i class="fas fa-arrow-right"></i> Continue to Notes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 3: Notes & Export -->
-                <div class="step-content" id="step3Content">
-                    <div class="notes-container">
-                        <div class="notes-header">
-                            <h2><i class="fas fa-sticky-note"></i> Processed Notes</h2>
-                            <p>Review the organized notes with timestamps, speaker identification, and categorized information.</p>
-                        </div>
-
-                        <!-- Notes Grid -->
-                        <div class="notes-grid" id="notesGrid">
-                            <!-- Notes will be dynamically inserted here -->
-                            <div class="empty-state">
-                                <div class="icon">📝</div>
-                                <h3>No notes yet</h3>
-                                <p>Complete the recording and analysis steps to generate organized notes.</p>
-                            </div>
-                        </div>
-
-                        <!-- Export Controls -->
-                        <div class="export-controls">
-                            <div class="export-header">
-                                <h3><i class="fas fa-file-export"></i> Export Options</h3>
-                                <p>Export your processed notes in various formats with timestamps and organization.</p>
-                            </div>
-
-                            <div class="export-options">
-                                <div class="export-option" onclick="exportPDF()">
-                                    <i class="fas fa-file-pdf"></i>
-                                    <h4>PDF Document</h4>
-                                    <p>Professional PDF with timestamps and formatting</p>
-                                </div>
-                                <div class="export-option" onclick="exportTXT()">
-                                    <i class="fas fa-file-alt"></i>
-                                    <h4>Text File</h4>
-                                    <p>Plain text with timestamps and speaker labels</p>
-                                </div>
-                                <div class="export-option" onclick="exportJSON()">
-                                    <i class="fas fa-code"></i>
-                                    <h4>JSON Data</h4>
-                                    <p>Structured data for further processing</p>
-                                </div>
-                            </div>
-
-                            <button class="export-btn" onclick="exportAllFormats()">
-                                <i class="fas fa-download"></i> Export All Formats
-                            </button>
-                        </div>
-
-                        <!-- Navigation Controls -->
-                        <div class="recording-controls" style="margin-top: 40px;">
-                            <button class="control-btn" id="step3BackBtn">
-                                <i class="fas fa-arrow-left"></i> Back to Analysis
-                            </button>
-                            <button class="control-btn next-btn" id="newSessionBtn">
-                                <i class="fas fa-plus"></i> Start New Session
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Status Bar -->
-    <div class="status-bar" id="statusBar" style="display: none;">
-        <div class="status-indicator"></div>
-        <div class="status-text" id="statusText">Processing...</div>
-    </div>
-
-    <!-- Session Modal -->
-    <div class="modal" id="sessionModal">
-        <div class="modal-content">
-            <h2><i class="fas fa-calendar-plus"></i> New Recording Session</h2>
-            <div class="form-group">
-                <label for="sessionName">Session Name</label>
-                <input type="text" id="sessionName" placeholder="e.g., Team Meeting, Client Call, Lecture">
-            </div>
-            <div class="form-group">
-                <label for="sessionDescription">Description (Optional)</label>
-                <textarea id="sessionDescription" rows="3" placeholder="Brief description of this session"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="sessionType">Session Type</label>
-                <select id="sessionType">
-                    <option value="meeting">Business Meeting</option>
-                    <option value="interview">Interview</option>
-                    <option value="lecture">Lecture/Class</option>
-                    <option value="brainstorm">Brainstorming</option>
-                    <option value="call">Phone/Video Call</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel-btn" id="cancelSessionBtn">Cancel</button>
-                <button class="modal-btn confirm-btn" id="confirmSessionBtn">Create Session</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ============================================
-        // APP STATE & INITIALIZATION
-        // ============================================
-
-        const state = {
-            currentStep: 1,
-            currentSession: null,
-            sessions: JSON.parse(localStorage.getItem('voiceNoteSessions')) || [],
-            isRecording: false,
-            mediaRecorder: null,
-            audioChunks: [],
-            audioContext: null,
-            analyser: null,
-            dataArray: null,
-            animationId: null,
-            mediaStream: null,
-            recordedAudio: null,
-            voices: [
-                { id: 1, name: 'Speaker 1', color: '#6366f1', wordCount: 0, percentage: 0 },
-                { id: 2, name: 'Speaker 2', color: '#10b981', wordCount: 0, percentage: 0 }
-            ],
-            transcription: '',
-            correctedText: '',
-            extractedInfo: [],
-            organizedNotes: [],
-            processingComplete: false
-        };
-
-        // DOM Elements
-        const elements = {
-            // Steps
-            step1: document.getElementById('step1'),
-            step2: document.getElementById('step2'),
-            step3: document.getElementById('step3'),
-            step1Content: document.getElementById('step1Content'),
-            step2Content: document.getElementById('step2Content'),
-            step3Content: document.getElementById('step3Content'),
-            
-            // Session management
-            sessionsList: document.getElementById('sessionsList'),
-            createSessionBtn: document.getElementById('createSessionBtn'),
-            sessionModal: document.getElementById('sessionModal'),
-            
-            // Recording
-            recordBtn: document.getElementById('recordBtn'),
-            recordingStatus: document.getElementById('recordingStatus'),
-            waveformCanvas: document.getElementById('waveformCanvas'),
-            voiceList: document.getElementById('voiceList'),
-            
-            // Processing
-            transcriptionDetails: document.getElementById('transcriptionDetails'),
-            correctionDetails: document.getElementById('correctionDetails'),
-            extractionDetails: document.getElementById('extractionDetails'),
-            organizationDetails: document.getElementById('organizationDetails'),
-            
-            // Notes
-            notesGrid: document.getElementById('notesGrid'),
-            
-            // Navigation
-            step1NextBtn: document.getElementById('step1NextBtn'),
-            step2NextBtn: document.getElementById('step2NextBtn'),
-            step2BackBtn: document.getElementById('step2BackBtn'),
-            step3BackBtn: document.getElementById('step3BackBtn'),
-            newSessionBtn: document.getElementById('newSessionBtn'),
-            
-            // Status
-            statusBar: document.getElementById('statusBar'),
-            statusText: document.getElementById('statusText')
-        };
-
-        // Initialize App
-        function initApp() {
-            renderSessions();
-            setupEventListeners();
-            setupAudioContext();
-            
-            if (state.sessions.length === 0) {
-                createSampleSession();
-            } else {
-                selectSession(0);
-            }
-        }
-
-        // ============================================
-        // STEP MANAGEMENT
-        // ============================================
-
-        function goToStep(step) {
-            state.currentStep = step;
-            
-            // Update step indicators
-            elements.step1.classList.remove('active', 'completed');
-            elements.step2.classList.remove('active', 'completed');
-            elements.step3.classList.remove('active', 'completed');
-            
-            elements.step1Content.classList.remove('active');
-            elements.step2Content.classList.remove('active');
-            elements.step3Content.classList.remove('active');
-            
-            if (step >= 1) {
-                elements.step1.classList.add('completed');
-                if (step === 1) elements.step1.classList.add('active');
-            }
-            if (step >= 2) {
-                elements.step2.classList.add('completed');
-                if (step === 2) elements.step2.classList.add('active');
-            }
-            if (step >= 3) {
-                elements.step3.classList.add('completed');
-                if (step === 3) elements.step3.classList.add('active');
-            }
-            
-            // Show active content
-            if (step === 1) elements.step1Content.classList.add('active');
-            if (step === 2) elements.step2Content.classList.add('active');
-            if (step === 3) elements.step3Content.classList.add('active');
-            
-            // Update button states
-            if (step === 1 && state.recordedAudio) {
-                elements.step1NextBtn.disabled = false;
-            }
-            if (step === 2 && state.processingComplete) {
-                elements.step2NextBtn.disabled = false;
-            }
-        }
-
-        // ============================================
-        // SESSION MANAGEMENT
-        // ============================================
-
-        function createSampleSession() {
-            const sampleSession = {
-                id: Date.now(),
-                name: 'Sample Team Meeting',
-                description: 'Weekly team sync meeting',
-                type: 'meeting',
-                created: new Date().toISOString(),
-                audioData: null,
-                transcription: '',
-                notes: []
-            };
-            
-            state.sessions.push(sampleSession);
-            saveToLocalStorage();
-            renderSessions();
-            selectSession(0);
-        }
-
-        function renderSessions() {
-            elements.sessionsList.innerHTML = '';
-            
-            if (state.sessions.length === 0) {
-                elements.sessionsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">🎙️</div>
-                        <h3>No sessions yet</h3>
-                        <p>Create your first recording session</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            state.sessions.forEach((session, index) => {
-                const sessionItem = document.createElement('div');
-                sessionItem.className = 'session-item';
-                if (state.currentSession === index) {
-                    sessionItem.classList.add('active');
-                }
-                
-                const date = new Date(session.created);
-                const formattedDate = date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                sessionItem.innerHTML = `
-                    <div class="session-title">
-                        <span>${session.name}</span>
-                        <span class="note-count">${session.notes.length}</span>
-                    </div>
-                    <div class="session-date">${formattedDate}</div>
-                    <p style="margin-top: 8px; color: #666; font-size: 0.9rem; line-height: 1.4;">${session.description || 'No description'}</p>
-                    <div style="margin-top: 10px; font-size: 0.85rem; color: var(--gray);">
-                        <i class="fas fa-${getSessionTypeIcon(session.type)}"></i> ${session.type.charAt(0).toUpperCase() + session.type.slice(1)}
-                    </div>
-                `;
-                
-                sessionItem.addEventListener('click', () => selectSession(index));
-                elements.sessionsList.appendChild(sessionItem);
-            });
-        }
-
-        function getSessionTypeIcon(type) {
-            const icons = {
-                'meeting': 'users',
-                'interview': 'comments',
-                'lecture': 'chalkboard-teacher',
-                'brainstorm': 'lightbulb',
-                'call': 'phone',
-                'other': 'microphone'
-            };
-            return icons[type] || 'microphone';
-        }
-
-        function selectSession(index) {
-            state.currentSession = index;
-            renderSessions();
-            
-            const session = state.sessions[index];
-            
-            // Reset state for new session
-            state.isRecording = false;
-            state.recordedAudio = null;
-            state.transcription = '';
-            state.correctedText = '';
-            state.extractedInfo = [];
-            state.organizedNotes = [];
-            state.processingComplete = false;
-            
-            // Update UI
-            elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Recording';
-            elements.recordBtn.classList.remove('recording');
-            elements.recordingStatus.textContent = 'Ready to record';
-            elements.step1NextBtn.disabled = true;
-            elements.step2NextBtn.disabled = true;
-            
-            // Reset waveform
-            drawSilentWaveform();
-            
-            // Go to step 1
-            goToStep(1);
-        }
-
-        function createNewSession(name, description, type) {
-            const newSession = {
-                id: Date.now(),
-                name,
-                description,
-                type,
-                created: new Date().toISOString(),
-                audioData: null,
-                transcription: '',
-                notes: []
-            };
-            
-            state.sessions.push(newSession);
-            saveToLocalStorage();
-            renderSessions();
-            selectSession(state.sessions.length - 1);
-            
-            showToast(`Created session: ${name}`, 'success');
-        }
-
-        // ============================================
-        // AUDIO RECORDING & WAVEFORM (FIXED)
-        // ============================================
-
-        function setupAudioContext() {
-            try {
-                state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                state.analyser = state.audioContext.createAnalyser();
-                state.analyser.fftSize = 2048;
-                const bufferLength = state.analyser.frequencyBinCount;
-                state.dataArray = new Uint8Array(bufferLength);
-                
-                // Initialize waveform
-                drawSilentWaveform();
-            } catch (error) {
-                console.error('Failed to setup audio context:', error);
-                showToast('Audio features may be limited in this browser', 'warning');
-            }
-        }
-
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        sampleRate: 44100,
-                        channelCount: 1
-                    }
-                });
-                
-                state.mediaStream = stream;
-                state.audioChunks = [];
-                
-                // Setup audio processing for waveform
-                const source = state.audioContext.createMediaStreamSource(stream);
-                source.connect(state.analyser);
-                
-                // Start drawing waveform
-                drawWaveform();
-                
-                // Setup MediaRecorder
-                state.mediaRecorder = new MediaRecorder(stream);
-                
-                state.mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        state.audioChunks.push(event.data);
-                    }
-                };
-                
-                state.mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
-                    state.recordedAudio = audioBlob;
-                    
-                    // Save to session
-                    if (state.currentSession !== null) {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(audioBlob);
-                        reader.onloadend = () => {
-                            state.sessions[state.currentSession].audioData = reader.result;
-                            saveToLocalStorage();
-                        };
-                    }
-                    
-                    // Enable next step
-                    elements.step1NextBtn.disabled = false;
-                    elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Recording';
-                    elements.recordBtn.classList.remove('recording');
-                    elements.recordingStatus.textContent = 'Recording complete';
-                    
-                    // Stop waveform
-                    cancelAnimationFrame(state.animationId);
-                    drawSilentWaveform();
-                    
-                    // Simulate voice separation analysis
-                    analyzeVoiceSeparation();
-                    
-                    showToast('Recording saved successfully', 'success');
-                };
-                
-                state.mediaRecorder.start(1000); // Collect data every second
-                state.isRecording = true;
-                
-                elements.recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
-                elements.recordBtn.classList.add('recording');
-                elements.recordingStatus.textContent = 'Recording... Speak now';
-                showToast('Recording started', 'info');
-                
-            } catch (error) {
-                console.error('Error accessing microphone:', error);
-                showToast('Could not access microphone. Please check permissions.', 'error');
-            }
-        }
-
-        function stopRecording() {
-            if (state.mediaRecorder && state.isRecording) {
-                state.mediaRecorder.stop();
-                state.isRecording = false;
-                
-                // Stop all tracks
-                state.mediaStream.getTracks().forEach(track => track.stop());
-                state.mediaStream = null;
-            }
-        }
-
-        function toggleRecording() {
-            if (!state.isRecording) {
-                startRecording();
-            } else {
-                stopRecording();
-            }
-        }
-
-        // ============================================
-        // WAVEFORM VISUALIZATION (FIXED IMPLEMENTATION)
-        // ============================================
-
-        function drawWaveform() {
-            if (!state.analyser || !state.dataArray) return;
-            
-            const canvas = elements.waveformCanvas;
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width = canvas.offsetWidth;
-            const height = canvas.height = canvas.offsetHeight;
-            
-            // Clear canvas with gradient background
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#16213e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // Get frequency data
-            state.analyser.getByteFrequencyData(state.dataArray);
-            
-            // Draw frequency bars
-            const barWidth = (width / state.analyser.frequencyBinCount) * 2.5;
-            let x = 0;
-            
-            for (let i = 0; i < state.analyser.frequencyBinCount; i++) {
-                const barHeight = (state.dataArray[i] / 255) * height;
-                
-                // Create gradient for bars
-                const barGradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
-                barGradient.addColorStop(0, '#6366f1');
-                barGradient.addColorStop(0.5, '#8b5cf6');
-                barGradient.addColorStop(1, '#ec4899');
-                
-                ctx.fillStyle = barGradient;
-                ctx.fillRect(x, height - barHeight, barWidth, barHeight);
-                
-                x += barWidth + 1;
-            }
-            
-            // Draw center line
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, height / 2);
-            ctx.lineTo(width, height / 2);
-            ctx.stroke();
-            
-            // Draw time markers
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            
-            for (let i = 0; i <= 4; i++) {
-                const xPos = (width / 4) * i;
-                const time = `${i * 5}s`;
-                ctx.fillText(time, xPos, height - 5);
-            }
-            
-            state.animationId = requestAnimationFrame(drawWaveform);
-        }
-
-        function drawSilentWaveform() {
-            const canvas = elements.waveformCanvas;
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width = canvas.offsetWidth;
-            const height = canvas.height = canvas.offsetHeight;
-            
-            // Clear with gradient background
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#16213e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // Draw subtle grid
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.lineWidth = 1;
-            
-            // Vertical lines
-            for (let i = 1; i < 4; i++) {
-                ctx.beginPath();
-                ctx.moveTo((width / 4) * i, 0);
-                ctx.lineTo((width / 4) * i, height);
-                ctx.stroke();
-            }
-            
-            // Horizontal lines
-            for (let i = 1; i < 4; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, (height / 4) * i);
-                ctx.lineTo(width, (height / 4) * i);
-                ctx.stroke();
-            }
-            
-            // Draw center line
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, height / 2);
-            ctx.lineTo(width, height / 2);
-            ctx.stroke();
-            
-            // Draw time markers
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            
-            for (let i = 0; i <= 4; i++) {
-                const xPos = (width / 4) * i;
-                const time = `${i * 5}s`;
-                ctx.fillText(time, xPos, height - 5);
-            }
-            
-            // Draw "Ready to record" text
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.font = '18px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Ready to record', width / 2, height / 2);
-        }
-
-        // ============================================
-        // VOICE SEPARATION ANALYSIS
-        // ============================================
-
-        function analyzeVoiceSeparation() {
-            // Simulate voice analysis
-            updateVoiceStats();
-            
-            // Simulate finding different voices
-            setTimeout(() => {
-                state.voices[0].wordCount = Math.floor(Math.random() * 500) + 300;
-                state.voices[1].wordCount = Math.floor(Math.random() * 400) + 200;
-                
-                const totalWords = state.voices[0].wordCount + state.voices[1].wordCount;
-                state.voices[0].percentage = Math.round((state.voices[0].wordCount / totalWords) * 100);
-                state.voices[1].percentage = Math.round((state.voices[1].wordCount / totalWords) * 100);
-                
-                updateVoiceList();
-                
-                // Randomly add a third speaker sometimes
-                if (Math.random() > 0.5) {
-                    state.voices.push({
-                        id: 3,
-                        name: 'Speaker 3',
-                        color: '#f59e0b',
-                        wordCount: Math.floor(Math.random() * 200) + 100,
-                        percentage: 0
-                    });
-                    
-                    // Recalculate percentages
-                    const newTotal = state.voices.reduce((sum, voice) => sum + voice.wordCount, 0);
-                    state.voices.forEach(voice => {
-                        voice.percentage = Math.round((voice.wordCount / newTotal) * 100);
-                    });
-                    
-                    updateVoiceList();
-                }
-                
-                showToast('Voice separation analysis complete', 'success');
-            }, 1000);
-        }
-
-        function updateVoiceList() {
-            elements.voiceList.innerHTML = '';
-            
-            state.voices.forEach(voice => {
-                const voiceItem = document.createElement('div');
-                voiceItem.className = 'voice-item';
-                
-                voiceItem.innerHTML = `
-                    <div class="voice-color" style="background: ${voice.color};"></div>
-                    <div class="voice-info">
-                        <div class="voice-name">${voice.name}</div>
-                        <div class="voice-stats">${voice.wordCount} words • ${voice.percentage}% of conversation</div>
-                    </div>
-                `;
-                
-                elements.voiceList.appendChild(voiceItem);
-            });
-        }
-
-        function updateVoiceStats() {
-            // Initial voice stats update
-            state.voices.forEach(voice => {
-                voice.wordCount = 0;
-                voice.percentage = 0;
-            });
-            updateVoiceList();
-        }
-
-        // ============================================
-        // AI PROCESSING PIPELINE
-        // ============================================
-
-        async function processRecording() {
-            if (!state.recordedAudio) {
-                showToast('No recording to process', 'warning');
-                return;
-            }
-            
-            // Show status bar
-            elements.statusBar.style.display = 'flex';
-            elements.statusText.textContent = 'Starting AI processing...';
-            
-            // Step 1: Transcription
-            elements.statusText.textContent = 'Transcribing audio...';
-            await simulateProcessing('processStep1', 2000);
-            state.transcription = generateMockTranscription();
-            elements.transcriptionDetails.textContent = state.transcription;
-            
-            // Step 2: Correction
-            elements.statusText.textContent = 'Correcting errors...';
-            await simulateProcessing('processStep2', 1500);
-            state.correctedText = correctTranscription(state.transcription);
-            elements.correctionDetails.textContent = 'CORRECTIONS APPLIED:\n\n' + 
-                state.correctedText.split('\n').map((line, i) => `${i + 1}. ${line}`).join('\n');
-            
-            // Step 3: Information Extraction
-            elements.statusText.textContent = 'Extracting key information...';
-            await simulateProcessing('processStep3', 1800);
-            state.extractedInfo = extractInformation(state.correctedText);
-            elements.extractionDetails.textContent = formatExtractedInfo(state.extractedInfo);
-            
-            // Step 4: Organization
-            elements.statusText.textContent = 'Organizing notes...';
-            await simulateProcessing('processStep4', 1200);
-            state.organizedNotes = organizeNotes(state.correctedText, state.extractedInfo);
-            elements.organizationDetails.textContent = formatOrganizedNotes(state.organizedNotes);
-            
-            // Complete processing
-            state.processingComplete = true;
-            elements.step2NextBtn.disabled = false;
-            
-            // Hide status bar
-            setTimeout(() => {
-                elements.statusBar.style.display = 'none';
-            }, 1000);
-            
-            // Update session with processed data
-            if (state.currentSession !== null) {
-                const session = state.sessions[state.currentSession];
-                session.transcription = state.correctedText;
-                session.notes = state.organizedNotes;
-                saveToLocalStorage();
-            }
-            
-            showToast('AI processing complete!', 'success');
-            goToStep(3);
-            renderNotes();
-        }
-
-        async function simulateProcessing(stepId, duration) {
-            const step = document.getElementById(stepId);
-            step.classList.add('active');
-            
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    step.classList.remove('active');
-                    step.classList.add('completed');
-                    resolve();
-                }, duration);
-            });
-        }
-
-        // ============================================
-        // MOCK AI PROCESSING FUNCTIONS
-        // ============================================
-
-        function generateMockTranscription() {
-            const conversations = [
-                "Okay team, let's start the weekly sync. First item: project timeline. We're currently two days behind schedule.",
-                "I think we need to allocate more resources to the frontend. The UI components are taking longer than expected.",
-                "The client wants to see a demo by next Wednesday. Can we have something ready by then?",
-                "Budget-wise, we've used 75% of our allocation. We need to be careful with the remaining funds.",
-                "I'll prepare the presentation. Sarah, can you handle the backend API documentation?",
-                "We should schedule a code review for Friday. Also, don't forget about the security audit next week.",
-                "The new requirements from marketing include dark mode support and better mobile responsiveness.",
-                "I found a critical bug in the payment processing module. It needs immediate attention.",
-                "Let's set up a meeting with the design team tomorrow at 2 PM to discuss the new mockups.",
-                "The database migration is scheduled for Saturday at midnight to minimize downtime."
-            ];
-            
-            // Combine random conversations with timestamps
-            let transcription = '';
-            let time = 0;
-            
-            for (let i = 0; i < 8; i++) {
-                const speaker = i % 2 === 0 ? 'SPEAKER_1' : 'SPEAKER_2';
-                const text = conversations[Math.floor(Math.random() * conversations.length)];
-                time += Math.floor(Math.random() * 60) + 30; // Add 30-90 seconds
-                
-                transcription += `[${formatTime(time)}] ${speaker}: ${text}\n\n`;
-            }
-            
-            return transcription;
-        }
-
-        function correctTranscription(transcription) {
-            // Simulate AI corrections
-            const corrections = [
-                { from: 'sync', to: 'synchronization' },
-                { from: 'UI', to: 'user interface' },
-                { from: "we're", to: 'we are' },
-                { from: "can't", to: 'cannot' },
-                { from: "don't", to: 'do not' },
-                { from: "won't", to: 'will not' },
-                { from: 'backend', to: 'back-end' },
-                { from: 'frontend', to: 'front-end' }
-            ];
-            
-            let corrected = transcription;
-            corrections.forEach(correction => {
-                corrected = corrected.replace(new RegExp(correction.from, 'gi'), correction.to);
-            });
-            
-            return corrected;
-        }
-
-        function extractInformation(text) {
-            // Simulate AI extracting key information
-            return {
-                tasks: [
-                    'Allocate more resources to front-end development',
-                    'Prepare client demo for next Wednesday',
-                    'Handle backend API documentation',
-                    'Schedule code review for Friday',
-                    'Fix critical bug in payment processing',
-                    'Set up meeting with design team',
-                    'Complete database migration on Saturday'
-                ],
-                subjects: [
-                    'Project Timeline',
-                    'Resource Allocation',
-                    'Client Demo',
-                    'Budget Management',
-                    'Code Quality',
-                    'Security Audit',
-                    'UI/UX Design'
-                ],
-                dates: [
-                    'Next Wednesday',
-                    'Friday',
-                    'Tomorrow at 2 PM',
-                    'Saturday at midnight'
-                ],
-                priorities: [
-                    { task: 'Fix payment processing bug', priority: 'HIGH' },
-                    { task: 'Prepare client demo', priority: 'HIGH' },
-                    { task: 'Database migration', priority: 'MEDIUM' },
-                    { task: 'Code review', priority: 'MEDIUM' }
-                ]
-            };
-        }
-
-        function organizeNotes(text, extractedInfo) {
-            // Organize notes with timestamps, speakers, and categories
-            const lines = text.split('\n').filter(line => line.trim());
-            const notes = [];
-            
-            let noteId = 1;
-            for (const line of lines) {
-                if (line.includes('SPEAKER')) {
-                    const timeMatch = line.match(/\[(\d+:\d+)\]/);
-                    const speakerMatch = line.match(/SPEAKER_(\d+)/);
-                    const content = line.split(':').slice(1).join(':').trim();
-                    
-                    if (timeMatch && speakerMatch) {
-                        const speaker = parseInt(speakerMatch[1]);
-                        const color = speaker === 1 ? '#6366f1' : '#10b981';
-                        
-                        // Determine category based on content
-                        let category = 'general';
-                        let tags = [];
-                        
-                        if (content.toLowerCase().includes('timeline') || content.toLowerCase().includes('schedule')) {
-                            category = 'timeline';
-                            tags.push('project', 'schedule');
-                        } else if (content.toLowerCase().includes('bug') || content.toLowerCase().includes('fix')) {
-                            category = 'issue';
-                            tags.push('bug', 'urgent');
-                        } else if (content.toLowerCase().includes('meeting') || content.toLowerCase().includes('demo')) {
-                            category = 'meeting';
-                            tags.push('client', 'presentation');
-                        } else if (content.toLowerCase().includes('budget') || content.toLowerCase().includes('cost')) {
-                            category = 'finance';
-                            tags.push('budget', 'allocation');
-                        }
-                        
-                        notes.push({
-                            id: noteId++,
-                            time: timeMatch[1],
-                            speaker: speaker,
-                            speakerColor: color,
-                            content: content,
-                            category: category,
-                            tags: tags,
-                            task: extractedInfo.tasks[Math.floor(Math.random() * extractedInfo.tasks.length)],
-                            subject: extractedInfo.subjects[Math.floor(Math.random() * extractedInfo.subjects.length)]
-                        });
-                    }
-                }
-            }
-            
-            return notes;
-        }
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        function formatExtractedInfo(info) {
-            let formatted = 'TASKS IDENTIFIED:\n';
-            info.tasks.forEach((task, i) => {
-                formatted += `${i + 1}. ${task}\n`;
-            });
-            
-            formatted += '\nSUBJECTS DISCUSSED:\n';
-            info.subjects.forEach((subject, i) => {
-                formatted += `${i + 1}. ${subject}\n`;
-            });
-            
-            formatted += '\nIMPORTANT DATES:\n';
-            info.dates.forEach((date, i) => {
-                formatted += `${i + 1}. ${date}\n`;
-            });
-            
-            formatted += '\nPRIORITY ITEMS:\n';
-            info.priorities.forEach((item, i) => {
-                formatted += `${i + 1}. ${item.task} [${item.priority}]\n`;
-            });
-            
-            return formatted;
-        }
-
-        function formatOrganizedNotes(notes) {
-            let formatted = 'ORGANIZED NOTES:\n\n';
-            notes.forEach(note => {
-                formatted += `[${note.time}] Speaker ${note.speaker}:\n`;
-                formatted += `Content: ${note.content}\n`;
-                formatted += `Category: ${note.category.toUpperCase()}\n`;
-                formatted += `Task: ${note.task}\n`;
-                formatted += `Subject: ${note.subject}\n`;
-                formatted += `Tags: ${note.tags.join(', ')}\n`;
-                formatted += '-'.repeat(40) + '\n\n';
-            });
-            return formatted;
-        }
-
-        // ============================================
-        // NOTES RENDERING
-        // ============================================
-
-        function renderNotes() {
-            if (!state.organizedNotes.length) {
-                elements.notesGrid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📝</div>
-                        <h3>No notes yet</h3>
-                        <p>Complete the recording and analysis steps to generate organized notes.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            elements.notesGrid.innerHTML = '';
-            
-            state.organizedNotes.forEach(note => {
-                const noteCard = document.createElement('div');
-                noteCard.className = 'note-card';
-                
-                // Determine priority based on content
-                const isUrgent = note.content.toLowerCase().includes('urgent') || 
-                                note.content.toLowerCase().includes('critical') ||
-                                note.content.toLowerCase().includes('immediate');
-                
-                noteCard.innerHTML = `
-                    <div class="note-header">
-                        <div class="note-title">${note.subject}</div>
-                        <div class="note-time">${note.time}</div>
-                    </div>
-                    
-                    <div class="note-tags">
-                        <span class="tag task">${note.task.substring(0, 30)}${note.task.length > 30 ? '...' : ''}</span>
-                        <span class="tag subject">${note.category}</span>
-                        ${isUrgent ? '<span class="tag priority">URGENT</span>' : ''}
-                        ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    </div>
-                    
-                    <div class="note-content">
-                        ${note.content}
-                    </div>
-                    
-                    <div class="note-footer">
-                        <div class="note-speaker">
-                            <div class="speaker-color" style="background: ${note.speakerColor};"></div>
-                            <span>Speaker ${note.speaker}</span>
-                        </div>
-                        <div style="font-size: 0.9rem; color: var(--gray);">
-                            <i class="far fa-clock"></i> ${note.time}
-                        </div>
-                    </div>
-                `;
-                
-                elements.notesGrid.appendChild(noteCard);
-            });
-        }
-
-        // ============================================
-        // EXPORT FUNCTIONALITY
-        // ============================================
-
-        function exportPDF() {
-            if (!state.organizedNotes.length) {
-                showToast('No notes to export', 'warning');
-                return;
-            }
-            
-            showStatus('Generating PDF...');
-            
-            // Use jsPDF for PDF generation
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Add title
-            const session = state.sessions[state.currentSession];
-            doc.setFontSize(20);
-            doc.text(`Voice Notes: ${session.name}`, 20, 20);
-            
-            doc.setFontSize(12);
-            doc.text(`Date: ${new Date(session.created).toLocaleDateString()}`, 20, 30);
-            doc.text(`Type: ${session.type}`, 20, 36);
-            
-            if (session.description) {
-                doc.text(`Description: ${session.description}`, 20, 42);
-            }
-            
-            // Add notes table
-            let yPosition = 50;
-            
-            doc.setFontSize(14);
-            doc.text('Processed Notes', 20, yPosition);
-            yPosition += 10;
-            
-            state.organizedNotes.forEach((note, index) => {
-                if (yPosition > 270) {
-                    doc.addPage();
-                    yPosition = 20;
-                }
-                
-                doc.setFontSize(11);
-                doc.setTextColor(99, 102, 241); // Primary color
-                doc.text(`[${note.time}] Speaker ${note.speaker} - ${note.subject}`, 20, yPosition);
-                yPosition += 7;
-                
-                doc.setTextColor(0, 0, 0);
-                doc.text(`Task: ${note.task}`, 25, yPosition);
-                yPosition += 7;
-                
-                doc.text(`Content: ${note.content}`, 25, yPosition);
-                yPosition += 10;
-                
-                // Add horizontal line
-                doc.setDrawColor(200, 200, 200);
-                doc.line(20, yPosition, 190, yPosition);
-                yPosition += 5;
-            });
-            
-            // Save PDF
-            doc.save(`voice-notes-${session.name.toLowerCase().replace(/\s+/g, '-')}.pdf`);
-            
-            hideStatus();
-            showToast('PDF exported successfully', 'success');
-        }
-
-        function exportTXT() {
-            if (!state.organizedNotes.length) {
-                showToast('No notes to export', 'warning');
-                return;
-            }
-            
-            const session = state.sessions[state.currentSession];
-            let textContent = `VOICE NOTES EXPORT\n`;
-            textContent += `==================\n\n`;
-            textContent += `Session: ${session.name}\n`;
-            textContent += `Date: ${new Date(session.created).toLocaleDateString()}\n`;
-            textContent += `Type: ${session.type}\n`;
-            if (session.description) textContent += `Description: ${session.description}\n`;
-            textContent += `\n`.repeat(2);
-            
-            textContent += `PROCESSED NOTES\n`;
-            textContent += `===============\n\n`;
-            
-            state.organizedNotes.forEach((note, index) => {
-                textContent += `Note ${index + 1}\n`;
-                textContent += `Time: ${note.time}\n`;
-                textContent += `Speaker: Speaker ${note.speaker}\n`;
-                textContent += `Subject: ${note.subject}\n`;
-                textContent += `Task: ${note.task}\n`;
-                textContent += `Content: ${note.content}\n`;
-                textContent += `Tags: ${note.tags.join(', ')}\n`;
-                textContent += `\n`.repeat(2);
-            });
-            
-            const blob = new Blob([textContent], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `voice-notes-${session.name.toLowerCase().replace(/\s+/g, '-')}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast('Text file exported successfully', 'success');
-        }
-
-        function exportJSON() {
-            if (!state.organizedNotes.length) {
-                showToast('No notes to export', 'warning');
-                return;
-            }
-            
-            const session = state.sessions[state.currentSession];
-            const exportData = {
-                metadata: {
-                    sessionName: session.name,
-                    date: session.created,
-                    type: session.type,
-                    description: session.description,
-                    exportDate: new Date().toISOString()
-                },
-                voices: state.voices,
-                transcription: state.transcription,
-                correctedText: state.correctedText,
-                notes: state.organizedNotes
-            };
-            
-            const jsonContent = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([jsonContent], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `voice-notes-${session.name.toLowerCase().replace(/\s+/g, '-')}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast('JSON data exported successfully', 'success');
-        }
-
-        function exportAllFormats() {
-            exportPDF();
-            setTimeout(() => exportTXT(), 1000);
-            setTimeout(() => exportJSON(), 2000);
-            showToast('Exporting all formats...', 'info');
-        }
-
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-
-        function showStatus(message) {
-            elements.statusText.textContent = message;
-            elements.statusBar.style.display = 'flex';
-        }
-
-        function hideStatus() {
-            setTimeout(() => {
-                elements.statusBar.style.display = 'none';
-            }, 500);
-        }
-
-        function showToast(message, type = 'info') {
-            // Remove existing toast
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) {
-                existingToast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => existingToast.remove(), 300);
-            }
-            
-            // Create toast
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            
-            const icon = type === 'success' ? 'check-circle' :
-                        type === 'error' ? 'exclamation-circle' :
-                        type === 'warning' ? 'exclamation-triangle' : 'info-circle';
-            
-            toast.innerHTML = `
-                <i class="fas fa-${icon}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            // Auto-remove after 4 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('voiceNoteSessions', JSON.stringify(state.sessions));
-        }
-
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-
-        function setupEventListeners() {
-            // Recording controls
-            elements.recordBtn.addEventListener('click', toggleRecording);
-            
-            // Step navigation
-            elements.step1NextBtn.addEventListener('click', () => {
-                goToStep(2);
-                setTimeout(() => processRecording(), 500);
-            });
-            
-            elements.step2NextBtn.addEventListener('click', () => goToStep(3));
-            elements.step2BackBtn.addEventListener('click', () => goToStep(1));
-            elements.step3BackBtn.addEventListener('click', () => goToStep(2));
-            elements.newSessionBtn.addEventListener('click', () => {
-                elements.sessionModal.style.display = 'flex';
-            });
-            
-            // Session creation
-            elements.createSessionBtn.addEventListener('click', () => {
-                elements.sessionModal.style.display = 'flex';
-            });
-            
-            document.getElementById('cancelSessionBtn').addEventListener('click', () => {
-                elements.sessionModal.style.display = 'none';
-            });
-            
-            document.getElementById('confirmSessionBtn').addEventListener('click', () => {
-                const name = document.getElementById('sessionName').value.trim();
-                const description = document.getElementById('sessionDescription').value.trim();
-                const type = document.getElementById('sessionType').value;
-                
-                if (!name) {
-                    showToast('Please enter a session name', 'warning');
-                    return;
-                }
-                
-                createNewSession(name, description, type);
-                elements.sessionModal.style.display = 'none';
-            });
-            
-            // Export controls
-            document.getElementById('exportAllBtn').addEventListener('click', exportAllFormats);
-            
-            // Close modal on outside click
-            window.addEventListener('click', (e) => {
-                if (e.target === elements.sessionModal) {
-                    elements.sessionModal.style.display = 'none';
-                }
-            });
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === ' ') {
-                    e.preventDefault();
-                    if (state.currentStep === 1) {
-                        toggleRecording();
-                    }
-                }
-                if (e.key === 'Escape') {
-                    if (state.isRecording) {
-                        stopRecording();
-                    }
-                }
-            });
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-
-        document.addEventListener('DOMContentLoaded', initApp);
-        
-        // Handle window resize for waveform
-        window.addEventListener('resize', () => {
-            if (!state.isRecording) {
-                drawSilentWaveform();
-            }
-        });
-    </script>
-    
-    <!-- Modal Styles -->
-    <style>
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -2474,81 +412,970 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
         }
-        
+
         .modal-content {
             background: white;
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 15px;
             width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            margin: 20px;
+            max-width: 400px;
         }
-        
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--dark);
             font-weight: 600;
-            font-size: 0.95rem;
         }
-        
+
         .form-group input,
-        .form-group textarea,
-        .form-group select {
+        .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e5e7eb;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s;
         }
-        
+
         .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
         }
-        
+
         .modal-buttons {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             justify-content: flex-end;
-            margin-top: 25px;
         }
-        
+
         .modal-btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
         }
-        
+
         .cancel-btn {
             background: var(--light);
             color: var(--dark);
-            border: 2px solid #e5e7eb;
         }
-        
+
         .confirm-btn {
             background: var(--primary);
             color: white;
         }
-        
-        .confirm-btn:hover {
-            background: var(--primary-dark);
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .notes-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-btn {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .recording-controls {
+                flex-direction: column;
+            }
         }
     </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🎤 Voice Notes Pro</h1>
+            <p>Real-time transcription with live waveform & PDF export</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sessions-header">
+                    <h2>Sessions</h2>
+                    <button id="newSessionBtn">
+                        <i class="fas fa-plus"></i> New Session
+                    </button>
+                </div>
+                <div class="sessions-list" id="sessionsList">
+                    <!-- Sessions will be added here -->
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content-area">
+                <!-- Status Bar -->
+                <div class="status-bar" id="statusBar">
+                    <div class="status-indicator"></div>
+                    <span id="statusText">Ready to record</span>
+                </div>
+
+                <!-- Recording Section -->
+                <section class="recording-section">
+                    <!-- Waveform Visualization -->
+                    <div class="waveform-container">
+                        <canvas id="waveformCanvas"></canvas>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="recording-controls">
+                        <button class="control-btn" id="recordBtn">
+                            <i class="fas fa-microphone"></i> Start Recording
+                        </button>
+                        <button class="control-btn" id="processBtn" disabled>
+                            <i class="fas fa-robot"></i> Process Notes
+                        </button>
+                    </div>
+
+                    <!-- Live Transcription -->
+                    <div class="transcription-container">
+                        <h3><i class="fas fa-keyboard"></i> Live Transcription</h3>
+                        <div id="transcriptionDisplay">
+                            Start speaking to see live transcription here...
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notes Display -->
+                <section class="notes-section">
+                    <div class="notes-header">
+                        <h3><i class="fas fa-sticky-note"></i> Processed Notes</h3>
+                    </div>
+                    <div class="notes-container" id="notesContainer">
+                        <!-- Notes will be added here -->
+                    </div>
+                </section>
+
+                <!-- Export Controls -->
+                <div class="export-controls">
+                    <div class="export-buttons">
+                        <button class="export-btn" id="exportPDF">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button class="export-btn" id="exportTXT">
+                            <i class="fas fa-file-alt"></i> Export TXT
+                        </button>
+                        <button class="export-btn" id="exportJSON">
+                            <i class="fas fa-code"></i> Export JSON
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Session Modal -->
+    <div class="modal" id="sessionModal">
+        <div class="modal-content">
+            <h2>New Session</h2>
+            <div class="form-group">
+                <label for="sessionName">Session Name</label>
+                <input type="text" id="sessionName" placeholder="Enter session name">
+            </div>
+            <div class="form-group">
+                <label for="sessionDescription">Description (Optional)</label>
+                <textarea id="sessionDescription" rows="3" placeholder="Session description"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" id="cancelBtn">Cancel</button>
+                <button class="modal-btn confirm-btn" id="createBtn">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== REAL IMPLEMENTATION ====================
+        // This uses actual browser APIs that WORK in modern browsers
+
+        class VoiceNotesApp {
+            constructor() {
+                // App State
+                this.state = {
+                    currentSession: null,
+                    sessions: JSON.parse(localStorage.getItem('voiceNotesSessions')) || [],
+                    isRecording: false,
+                    isTranscribing: false,
+                    audioContext: null,
+                    analyser: null,
+                    dataArray: null,
+                    mediaRecorder: null,
+                    audioChunks: [],
+                    recognition: null,
+                    transcription: [],
+                    notes: [],
+                    waveformAnimationId: null,
+                    recordingStartTime: null
+                };
+
+                // DOM Elements
+                this.elements = {
+                    sessionsList: document.getElementById('sessionsList'),
+                    sessionModal: document.getElementById('sessionModal'),
+                    statusBar: document.getElementById('statusBar'),
+                    statusText: document.getElementById('statusText'),
+                    waveformCanvas: document.getElementById('waveformCanvas'),
+                    recordBtn: document.getElementById('recordBtn'),
+                    processBtn: document.getElementById('processBtn'),
+                    transcriptionDisplay: document.getElementById('transcriptionDisplay'),
+                    notesContainer: document.getElementById('notesContainer'),
+                    exportPDF: document.getElementById('exportPDF'),
+                    exportTXT: document.getElementById('exportTXT'),
+                    exportJSON: document.getElementById('exportJSON')
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.setupAudioContext();
+                this.setupSpeechRecognition();
+                this.renderSessions();
+                this.setupEventListeners();
+                
+                if (this.state.sessions.length === 0) {
+                    this.createSession('Sample Session', 'First recording session');
+                } else {
+                    this.selectSession(0);
+                }
+            }
+
+            // ==================== AUDIO & WAVEFORM ====================
+            
+            setupAudioContext() {
+                try {
+                    this.state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.state.analyser = this.state.audioContext.createAnalyser();
+                    this.state.analyser.fftSize = 256;
+                    const bufferLength = this.state.analyser.frequencyBinCount;
+                    this.state.dataArray = new Uint8Array(bufferLength);
+                    
+                    this.drawSilentWaveform();
+                } catch (error) {
+                    console.log('Audio context not available:', error);
+                }
+            }
+
+            drawWaveform() {
+                if (!this.state.analyser || !this.state.dataArray) {
+                    this.state.waveformAnimationId = requestAnimationFrame(() => this.drawWaveform());
+                    return;
+                }
+
+                const canvas = this.elements.waveformCanvas;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+
+                // Get audio data
+                this.state.analyser.getByteTimeDomainData(this.state.dataArray);
+
+                // Clear canvas with gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 0, height);
+                gradient.addColorStop(0, '#1a1a2e');
+                gradient.addColorStop(1, '#16213e');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                // Draw waveform
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#6366f1';
+                ctx.beginPath();
+
+                const sliceWidth = width / this.state.dataArray.length;
+                let x = 0;
+
+                for (let i = 0; i < this.state.dataArray.length; i++) {
+                    const v = this.state.dataArray[i] / 128.0;
+                    const y = v * height / 2;
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+
+                    x += sliceWidth;
+                }
+
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+
+                // Draw center line
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+
+                this.state.waveformAnimationId = requestAnimationFrame(() => this.drawWaveform());
+            }
+
+            drawSilentWaveform() {
+                const canvas = this.elements.waveformCanvas;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+
+                // Clear with gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 0, height);
+                gradient.addColorStop(0, '#1a1a2e');
+                gradient.addColorStop(1, '#16213e');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                // Draw center line
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+
+                // Draw "Ready to record" text
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = '18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Ready to record', width / 2, height / 2);
+            }
+
+            // ==================== SPEECH RECOGNITION ====================
+
+            setupSpeechRecognition() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    console.log('Speech recognition not supported');
+                    this.elements.statusText.textContent = 'Speech recognition not available';
+                    return;
+                }
+
+                this.state.recognition = new SpeechRecognition();
+                this.state.recognition.continuous = true;
+                this.state.recognition.interimResults = true;
+                this.state.recognition.lang = 'en-US';
+
+                this.state.recognition.onstart = () => {
+                    this.state.isTranscribing = true;
+                    this.elements.statusText.textContent = 'Listening... Speak now';
+                };
+
+                this.state.recognition.onresult = (event) => {
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                            
+                            // Add to transcription with timestamp
+                            const timeFromStart = Date.now() - this.state.recordingStartTime;
+                            const timestamp = this.formatTime(timeFromStart);
+                            
+                            this.state.transcription.push({
+                                text: transcript,
+                                timestamp: timestamp,
+                                isFinal: true
+                            });
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    this.updateTranscriptionDisplay(interimTranscript);
+                };
+
+                this.state.recognition.onerror = (event) => {
+                    console.log('Speech recognition error:', event.error);
+                };
+
+                this.state.recognition.onend = () => {
+                    this.state.isTranscribing = false;
+                    this.elements.statusText.textContent = 'Transcription complete';
+                    this.elements.processBtn.disabled = false;
+                };
+            }
+
+            // ==================== RECORDING ====================
+
+            async startRecording() {
+                try {
+                    // Get microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+
+                    // Setup audio processing for waveform
+                    if (this.state.audioContext) {
+                        const source = this.state.audioContext.createMediaStreamSource(stream);
+                        source.connect(this.state.analyser);
+                        this.drawWaveform();
+                    }
+
+                    // Setup MediaRecorder
+                    this.state.mediaRecorder = new MediaRecorder(stream);
+                    this.state.audioChunks = [];
+                    this.state.transcription = [];
+                    this.state.recordingStartTime = Date.now();
+
+                    this.state.mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            this.state.audioChunks.push(event.data);
+                        }
+                    };
+
+                    this.state.mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(this.state.audioChunks, { type: 'audio/webm' });
+                        
+                        // Save to current session
+                        if (this.state.currentSession !== null) {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(audioBlob);
+                            reader.onloadend = () => {
+                                this.state.sessions[this.state.currentSession].audio = reader.result;
+                                this.state.sessions[this.state.currentSession].transcription = this.state.transcription;
+                                this.saveToLocalStorage();
+                            };
+                        }
+
+                        // Stop speech recognition
+                        if (this.state.recognition && this.state.isTranscribing) {
+                            this.state.recognition.stop();
+                        }
+
+                        // Stop waveform
+                        if (this.state.waveformAnimationId) {
+                            cancelAnimationFrame(this.state.waveformAnimationId);
+                        }
+                        this.drawSilentWaveform();
+
+                        // Update UI
+                        this.elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Recording';
+                        this.elements.recordBtn.classList.remove('recording');
+                        this.elements.statusBar.classList.remove('recording');
+                    };
+
+                    // Start recording
+                    this.state.mediaRecorder.start();
+                    this.state.isRecording = true;
+                    
+                    // Start speech recognition
+                    if (this.state.recognition) {
+                        this.state.recognition.start();
+                    }
+
+                    // Update UI
+                    this.elements.recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                    this.elements.recordBtn.classList.add('recording');
+                    this.elements.statusBar.classList.add('recording');
+                    this.elements.statusText.textContent = 'Recording...';
+                    this.elements.processBtn.disabled = true;
+
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    this.elements.statusText.textContent = 'Microphone access denied';
+                }
+            }
+
+            stopRecording() {
+                if (this.state.mediaRecorder && this.state.isRecording) {
+                    this.state.mediaRecorder.stop();
+                    this.state.isRecording = false;
+                    
+                    // Stop all audio tracks
+                    if (this.state.mediaRecorder.stream) {
+                        this.state.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    }
+                }
+            }
+
+            toggleRecording() {
+                if (!this.state.isRecording) {
+                    this.startRecording();
+                } else {
+                    this.stopRecording();
+                }
+            }
+
+            // ==================== NOTE PROCESSING ====================
+
+            processNotes() {
+                if (this.state.transcription.length === 0) {
+                    alert('No transcription to process');
+                    return;
+                }
+
+                this.elements.statusText.textContent = 'Processing notes...';
+                
+                // Group transcription into notes based on time gaps
+                const notes = this.groupTranscriptionIntoNotes(this.state.transcription);
+                
+                // Analyze each note for tasks and subjects
+                const processedNotes = notes.map((note, index) => {
+                    const analysis = this.analyzeNote(note.text);
+                    return {
+                        id: index + 1,
+                        time: note.timestamp,
+                        content: note.text,
+                        task: analysis.task,
+                        subject: analysis.subject,
+                        tags: analysis.tags
+                    };
+                });
+
+                this.state.notes = processedNotes;
+                this.renderNotes();
+                this.elements.statusText.textContent = 'Notes processed successfully';
+                
+                // Save to session
+                if (this.state.currentSession !== null) {
+                    this.state.sessions[this.state.currentSession].notes = processedNotes;
+                    this.saveToLocalStorage();
+                }
+            }
+
+            groupTranscriptionIntoNotes(transcription) {
+                const notes = [];
+                let currentNote = null;
+                let lastTimestamp = 0;
+
+                transcription.forEach(item => {
+                    if (!item.isFinal) return;
+                    
+                    const currentTime = this.timeToSeconds(item.timestamp);
+                    
+                    // If gap is more than 10 seconds or first item, start new note
+                    if (!currentNote || (currentTime - lastTimestamp) > 10) {
+                        if (currentNote) {
+                            notes.push(currentNote);
+                        }
+                        currentNote = {
+                            text: item.text,
+                            timestamp: item.timestamp
+                        };
+                    } else {
+                        // Continue current note
+                        currentNote.text += ' ' + item.text;
+                    }
+                    
+                    lastTimestamp = currentTime;
+                });
+
+                // Add the last note
+                if (currentNote) {
+                    notes.push(currentNote);
+                }
+
+                return notes;
+            }
+
+            analyzeNote(text) {
+                // Simple keyword analysis (in a real app, this would use NLP)
+                const keywords = {
+                    tasks: ['need', 'should', 'must', 'will', 'going to', 'plan to', 'create', 'make', 'do', 'fix', 'implement'],
+                    subjects: ['project', 'meeting', 'client', 'team', 'code', 'design', 'budget', 'timeline', 'feature']
+                };
+
+                const words = text.toLowerCase().split(/\s+/);
+                
+                // Find tasks
+                let task = 'General discussion';
+                for (const taskWord of keywords.tasks) {
+                    if (text.toLowerCase().includes(taskWord)) {
+                        const startIndex = text.toLowerCase().indexOf(taskWord);
+                        const taskText = text.substring(startIndex, Math.min(startIndex + 50, text.length));
+                        task = taskText.trim();
+                        if (task.length > 40) task = task.substring(0, 40) + '...';
+                        break;
+                    }
+                }
+
+                // Find subjects
+                let subject = 'General';
+                for (const subjectWord of keywords.subjects) {
+                    if (text.toLowerCase().includes(subjectWord)) {
+                        subject = subjectWord.charAt(0).toUpperCase() + subjectWord.slice(1);
+                        break;
+                    }
+                }
+
+                // Generate tags
+                const tags = [];
+                if (text.toLowerCase().includes('urgent') || text.toLowerCase().includes('important')) {
+                    tags.push('priority');
+                }
+                if (text.toLowerCase().includes('tomorrow') || text.toLowerCase().includes('today')) {
+                    tags.push('time-sensitive');
+                }
+                tags.push(subject.toLowerCase());
+
+                return { task, subject, tags };
+            }
+
+            // ==================== RENDERING ====================
+
+            updateTranscriptionDisplay(interim) {
+                let displayText = '';
+                
+                // Add final transcriptions
+                this.state.transcription.forEach(item => {
+                    if (item.isFinal) {
+                        displayText += `[${item.timestamp}] ${item.text}\n`;
+                    }
+                });
+                
+                // Add interim transcription
+                if (interim) {
+                    displayText += `(Listening...) ${interim}`;
+                }
+                
+                this.elements.transcriptionDisplay.textContent = displayText || 'Start speaking to see live transcription here...';
+                
+                // Auto-scroll
+                this.elements.transcriptionDisplay.scrollTop = this.elements.transcriptionDisplay.scrollHeight;
+            }
+
+            renderNotes() {
+                const container = this.elements.notesContainer;
+                container.innerHTML = '';
+
+                if (this.state.notes.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-sticky-note" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <h3>No notes yet</h3>
+                            <p>Process your transcription to generate organized notes</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.state.notes.forEach(note => {
+                    const noteCard = document.createElement('div');
+                    noteCard.className = 'note-card';
+                    
+                    noteCard.innerHTML = `
+                        <div class="note-time">${note.time}</div>
+                        <div class="note-content">${note.content}</div>
+                        <div class="note-tags">
+                            <span class="tag subject">${note.subject}</span>
+                            <span class="tag task">${note.task}</span>
+                            ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    `;
+                    
+                    container.appendChild(noteCard);
+                });
+            }
+
+            renderSessions() {
+                const container = this.elements.sessionsList;
+                container.innerHTML = '';
+
+                this.state.sessions.forEach((session, index) => {
+                    const sessionItem = document.createElement('div');
+                    sessionItem.className = 'session-item';
+                    if (this.state.currentSession === index) {
+                        sessionItem.classList.add('active');
+                    }
+                    
+                    const date = new Date(session.created || Date.now());
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    sessionItem.innerHTML = `
+                        <div class="session-title">${session.name}</div>
+                        <div class="session-time">${formattedDate}</div>
+                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 5px;">
+                            ${session.notes ? session.notes.length : 0} notes
+                        </div>
+                    `;
+                    
+                    sessionItem.addEventListener('click', () => this.selectSession(index));
+                    container.appendChild(sessionItem);
+                });
+            }
+
+            // ==================== SESSION MANAGEMENT ====================
+
+            createSession(name, description) {
+                const newSession = {
+                    id: Date.now(),
+                    name: name || 'New Session',
+                    description: description || '',
+                    created: new Date().toISOString(),
+                    audio: null,
+                    transcription: [],
+                    notes: []
+                };
+                
+                this.state.sessions.push(newSession);
+                this.saveToLocalStorage();
+                this.renderSessions();
+                this.selectSession(this.state.sessions.length - 1);
+            }
+
+            selectSession(index) {
+                this.state.currentSession = index;
+                this.renderSessions();
+                
+                const session = this.state.sessions[index];
+                this.state.transcription = session.transcription || [];
+                this.state.notes = session.notes || [];
+                
+                // Update UI
+                this.updateTranscriptionDisplay('');
+                this.renderNotes();
+                this.elements.processBtn.disabled = this.state.transcription.length === 0;
+                
+                // Update status
+                this.elements.statusText.textContent = `Loaded: ${session.name}`;
+                setTimeout(() => {
+                    this.elements.statusText.textContent = 'Ready to record';
+                }, 2000);
+            }
+
+            // ==================== EXPORT FUNCTIONS ====================
+
+            exportPDF() {
+                if (this.state.notes.length === 0) {
+                    alert('No notes to export');
+                    return;
+                }
+
+                const session = this.state.sessions[this.state.currentSession];
+                
+                // Create PDF using jsPDF (if available) or simple text download
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    // Add title
+                    doc.setFontSize(20);
+                    doc.text(`Voice Notes: ${session.name}`, 20, 20);
+                    
+                    doc.setFontSize(12);
+                    doc.text(`Date: ${new Date(session.created).toLocaleDateString()}`, 20, 30);
+                    
+                    if (session.description) {
+                        doc.text(`Description: ${session.description}`, 20, 36);
+                    }
+                    
+                    // Add notes
+                    let y = 50;
+                    doc.setFontSize(14);
+                    doc.text('Notes:', 20, y);
+                    y += 10;
+                    
+                    doc.setFontSize(11);
+                    this.state.notes.forEach((note, index) => {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        
+                        doc.text(`[${note.time}] ${note.subject}`, 20, y);
+                        y += 7;
+                        doc.text(`Task: ${note.task}`, 25, y);
+                        y += 7;
+                        
+                        // Split content into lines
+                        const lines = doc.splitTextToSize(note.content, 170);
+                        lines.forEach(line => {
+                            doc.text(line, 25, y);
+                            y += 7;
+                        });
+                        
+                        y += 5;
+                    });
+                    
+                    // Save PDF
+                    doc.save(`voice-notes-${session.name.toLowerCase().replace(/\s+/g, '-')}.pdf`);
+                    
+                } catch (error) {
+                    console.log('jsPDF not available, using text export');
+                    this.exportTXT();
+                }
+            }
+
+            exportTXT() {
+                if (this.state.notes.length === 0) {
+                    alert('No notes to export');
+                    return;
+                }
+
+                const session = this.state.sessions[this.state.currentSession];
+                let content = `VOICE NOTES EXPORT\n`;
+                content += `==================\n\n`;
+                content += `Session: ${session.name}\n`;
+                content += `Date: ${new Date(session.created).toLocaleDateString()}\n`;
+                if (session.description) content += `Description: ${session.description}\n`;
+                content += `\n`.repeat(2);
+                content += `NOTES\n`;
+                content += `=====\n\n`;
+                
+                this.state.notes.forEach((note, index) => {
+                    content += `Note ${index + 1} [${note.time}]\n`;
+                    content += `Subject: ${note.subject}\n`;
+                    content += `Task: ${note.task}\n`;
+                    content += `Content: ${note.content}\n`;
+                    content += `Tags: ${note.tags.join(', ')}\n`;
+                    content += `\n`.repeat(2);
+                });
+                
+                this.downloadFile(content, 'text/plain', `${session.name.toLowerCase().replace(/\s+/g, '-')}.txt`);
+            }
+
+            exportJSON() {
+                const session = this.state.sessions[this.state.currentSession];
+                const exportData = {
+                    session: session.name,
+                    date: session.created,
+                    description: session.description,
+                    notes: this.state.notes,
+                    transcription: this.state.transcription
+                };
+                
+                const content = JSON.stringify(exportData, null, 2);
+                this.downloadFile(content, 'application/json', `${session.name.toLowerCase().replace(/\s+/g, '-')}.json`);
+            }
+
+            downloadFile(content, mimeType, filename) {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // ==================== UTILITIES ====================
+
+            formatTime(milliseconds) {
+                const totalSeconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            timeToSeconds(timeStr) {
+                const [minutes, seconds] = timeStr.split(':').map(Number);
+                return minutes * 60 + seconds;
+            }
+
+            saveToLocalStorage() {
+                localStorage.setItem('voiceNotesSessions', JSON.stringify(this.state.sessions));
+            }
+
+            // ==================== EVENT HANDLERS ====================
+
+            setupEventListeners() {
+                // Recording controls
+                this.elements.recordBtn.addEventListener('click', () => this.toggleRecording());
+                this.elements.processBtn.addEventListener('click', () => this.processNotes());
+                
+                // Export buttons
+                this.elements.exportPDF.addEventListener('click', () => this.exportPDF());
+                this.elements.exportTXT.addEventListener('click', () => this.exportTXT());
+                this.elements.exportJSON.addEventListener('click', () => this.exportJSON());
+                
+                // Session modal
+                document.getElementById('newSessionBtn').addEventListener('click', () => {
+                    document.getElementById('sessionName').value = '';
+                    document.getElementById('sessionDescription').value = '';
+                    this.elements.sessionModal.style.display = 'flex';
+                });
+                
+                document.getElementById('cancelBtn').addEventListener('click', () => {
+                    this.elements.sessionModal.style.display = 'none';
+                });
+                
+                document.getElementById('createBtn').addEventListener('click', () => {
+                    const name = document.getElementById('sessionName').value.trim();
+                    const description = document.getElementById('sessionDescription').value.trim();
+                    
+                    if (!name) {
+                        alert('Please enter a session name');
+                        return;
+                    }
+                    
+                    this.createSession(name, description);
+                    this.elements.sessionModal.style.display = 'none';
+                });
+                
+                // Close modal on outside click
+                window.addEventListener('click', (e) => {
+                    if (e.target === this.elements.sessionModal) {
+                        this.elements.sessionModal.style.display = 'none';
+                    }
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === ' ') {
+                        e.preventDefault();
+                        this.toggleRecording();
+                    }
+                    if (e.key === 'Escape' && this.state.isRecording) {
+                        this.stopRecording();
+                    }
+                });
+                
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (!this.state.isRecording) {
+                        this.drawSilentWaveform();
+                    }
+                });
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new VoiceNotesApp();
+        });
+
+        // Add Font Awesome dynamically
+        const faLink = document.createElement('link');
+        faLink.rel = 'stylesheet';
+        faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+        document.head.appendChild(faLink);
+    </script>
 </body>
 </html>
