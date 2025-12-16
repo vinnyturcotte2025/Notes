@@ -1,227 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Notes by Enzo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-* { box-sizing: border-box; }
-body { margin:0; font-family: Arial,sans-serif; background:#020617; color:#e5e7eb; }
-.layout { display:flex; height:100vh; }
-.sidebar { width:270px; background:#020617; border-right:1px solid #1e293b; padding:16px; overflow-y:auto; }
-.main { flex:1; padding:20px; display:flex; flex-direction:column; }
-.sidebar h2 { text-align:center; margin-bottom:12px; }
-.sidebar section { margin-bottom:18px; }
-.sidebar h3 { margin:6px 0; font-size:0.75rem; color:#94a3b8; text-transform:uppercase; }
-.sidebar button, .sidebar select, .sidebar input { width:100%; margin-bottom:6px; padding:8px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:0.85rem; }
-.sidebar input { background:#020617; border:1px solid #334155; color:#e5e7eb; }
-.clip-list button { background:#475569; font-size:0.75rem; margin-bottom:4px; }
-canvas { height:70px; width:100%; margin-bottom:8px; }
-textarea { flex:1; width:100%; resize:none; padding:14px; border-radius:12px; border:1px solid #334155; background:transparent; color:#e5e7eb; font-size:1rem; }
-.status, .muted { text-align:center; font-size:0.8rem; color:#94a3b8; margin-top:6px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Notes App</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #333; color: white; padding: 20px; }
+    button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    #output { white-space: pre-wrap; margin-top: 20px; background-color: #444; padding: 10px; border-radius: 8px; }
+  </style>
 </head>
 <body>
-<div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h2>Notes by Enzo</h2>
-    <section>
-      <h3>Notebooks</h3>
-      <select id="books"></select>
-      <button id="newBook">➕ New Notebook</button>
-      <button id="shareBook">🤝 Share Notebook</button>
-    </section>
-    <section>
-      <h3>Recording</h3>
-      <button id="startRec">🎙 Start</button>
-      <button id="stopRec">⏹ Stop</button>
-      <div id="recStatus" class="muted">Idle</div>
-    </section>
-    <section>
-      <h3>Playback</h3>
-      <div id="clips" class="clip-list muted">No clips yet</div>
-    </section>
-    <section>
-      <h3>Intelligence</h3>
-      <button id="aiSummary">🧠 AI Summary</button>
-      <button id="historyBtn">🕓 History</button>
-    </section>
-    <section>
-      <h3>Settings</h3>
-      <input id="apiKey" type="password" placeholder="AI API Key">
-    </section>
-  </aside>
+  <h1>AI Notes App</h1>
+  <button id="start-btn">Start Listening</button>
+  <button id="save-btn">Save Notes</button>
+  <div id="output"></div>
 
-  <!-- MAIN -->
-  <main class="main">
-    <canvas id="wave"></canvas>
-    <textarea id="notes" placeholder="Speak. Think. Remember."></textarea>
-    <div class="status" id="status">Idle</div>
-  </main>
-</div>
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const saveBtn = document.getElementById("save-btn");
+    const outputDiv = document.getElementById("output");
 
-<script>
-// -------------------- Local Storage Helpers --------------------
-function saveNotebooks(data) { localStorage.setItem('notebooks', JSON.stringify(data)); }
-function loadNotebooks() { return JSON.parse(localStorage.getItem('notebooks') || '{}'); }
-function saveCurrentBook(id) { localStorage.setItem('currentBook', id); }
-function loadCurrentBook() { return localStorage.getItem('currentBook'); }
+    let finalTranscript = "";
+    
+    // Initialize the speech recognition
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
 
-// -------------------- Elements --------------------
-const booksEl = document.getElementById("books");
-const notesEl = document.getElementById("notes");
-const clipsDiv = document.getElementById("clips");
-const recStatus = document.getElementById("recStatus");
-const statusEl = document.getElementById("status");
-const apiKeyInput = document.getElementById("apiKey");
+    recognition.onresult = (event) => {
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript + "\n";
+        } else {
+          interimTranscript += result[0].transcript;
+        }
+      }
+      outputDiv.textContent = finalTranscript + interimTranscript;
+    };
 
-let notebooks = loadNotebooks();
-let currentBook = loadCurrentBook();
-let saveTimer;
-let audioChunks = [];
-let mediaRecorder;
+    recognition.onstart = () => {
+      startBtn.textContent = "Listening...";
+    };
 
-// -------------------- Notebook Management --------------------
-function updateDropdown() {
-  booksEl.innerHTML = "";
-  for(const id in notebooks){
-    const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = notebooks[id].name;
-    booksEl.appendChild(opt);
-  }
-  if(currentBook && notebooks[currentBook]){
-    booksEl.value = currentBook;
-    notesEl.value = notebooks[currentBook].text || "";
-    renderClips();
-  } else {
-    const first = Object.keys(notebooks)[0];
-    if(first) selectBook(first);
-  }
-}
+    recognition.onend = () => {
+      startBtn.textContent = "Start Listening";
+    };
 
-function selectBook(id){
-  currentBook = id;
-  saveCurrentBook(id);
-  notesEl.value = notebooks[id].text || "";
-  renderClips();
-}
+    startBtn.onclick = () => {
+      if (recognition) {
+        recognition.start();
+      }
+    };
 
-booksEl.onchange = e => selectBook(e.target.value);
-
-document.getElementById("newBook").onclick = () => {
-  const name = prompt("Notebook name?");
-  if(!name) return;
-  const id = 'book_' + Date.now();
-  notebooks[id] = { name, text:"", audio:[], history:[] };
-  saveNotebooks(notebooks);
-  selectBook(id);
-  updateDropdown();
-}
-
-// Share notebook placeholder
-document.getElementById("shareBook").onclick = () => {
-  alert("Sharing is not available in local version.");
-};
-
-// -------------------- Notes Save --------------------
-notesEl.oninput = () => {
-  if(!currentBook) return;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    notebooks[currentBook].text = notesEl.value;
-    notebooks[currentBook].history.push({text:notesEl.value, ts:Date.now()});
-    saveNotebooks(notebooks);
-  }, 500);
-}
-
-// -------------------- Audio Recording --------------------
-document.getElementById("startRec").onclick = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  mediaRecorder = new MediaRecorder(stream);
-  audioChunks = [];
-  mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-  mediaRecorder.onstop = () => {
-    if(!currentBook) return;
-    notebooks[currentBook].audio.push({blob: new Blob(audioChunks,{type:'audio/webm'}), ts:Date.now()});
-    saveNotebooks(notebooks);
-    renderClips();
-  }
-  mediaRecorder.start();
-  startWave(stream);
-  recStatus.textContent = "Recording…";
-}
-
-document.getElementById("stopRec").onclick = () => {
-  if(mediaRecorder && mediaRecorder.state==="recording") mediaRecorder.stop();
-  recStatus.textContent = "Idle";
-}
-
-// -------------------- Playback --------------------
-function renderClips(){
-  clipsDiv.innerHTML = "";
-  if(!currentBook || !notebooks[currentBook].audio.length){
-    clipsDiv.innerHTML="No clips yet"; return;
-  }
-  notebooks[currentBook].audio.slice().reverse().forEach(a=>{
-    const b = document.createElement("button");
-    b.textContent = "▶ " + new Date(a.ts).toLocaleTimeString();
-    b.onclick = () => { const audio = new Audio(URL.createObjectURL(a.blob)); audio.play(); };
-    clipsDiv.appendChild(b);
-  });
-}
-
-// -------------------- Waveform --------------------
-function startWave(stream){
-  const ac = new AudioContext();
-  const analyser = ac.createAnalyser();
-  ac.createMediaStreamSource(stream).connect(analyser);
-  const canvas = document.getElementById("wave");
-  const c = canvas.getContext("2d");
-  const data = new Uint8Array(analyser.fftSize = 2048);
-  (function draw(){
-    requestAnimationFrame(draw);
-    analyser.getByteTimeDomainData(data);
-    c.clearRect(0,0,canvas.width,canvas.height);
-    c.beginPath();
-    data.forEach((v,i)=>{
-      const x=i/data.length*canvas.width;
-      const y=v/255*canvas.height;
-      i?c.lineTo(x,y):c.moveTo(x,y);
-    });
-    c.strokeStyle="#2563eb";
-    c.stroke();
-  })();
-}
-
-// -------------------- AI Summary --------------------
-document.getElementById("aiSummary").onclick = async () => {
-  const key = apiKeyInput.value.trim();
-  if(!key){
-    alert("Offline summary:\n"+(notesEl.value.split(/[.!?]/).slice(0,3).join(". ")));
-    return;
-  }
-  const r = await fetch("https://api.openai.com/v1/chat/completions",{
-    method:"POST",
-    headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
-    body:JSON.stringify({model:"gpt-4o-mini",messages:[{role:"user",content:notesEl.value}]})
-  });
-  const j = await r.json();
-  alert(j.choices[0].message.content);
-}
-
-// -------------------- History --------------------
-document.getElementById("historyBtn").onclick = () => {
-  if(!currentBook) return;
-  const h = notebooks[currentBook].history.slice(-5).reverse();
-  let out = "Recent Versions:\n\n";
-  h.forEach(v=> out += new Date(v.ts).toLocaleString()+"\n");
-  alert(out);
-}
-
-// -------------------- Initialize --------------------
-updateDropdown();
-</script>
+    // Save notes to a file
+    saveBtn.onclick = () => {
+      const blob = new Blob([finalTranscript], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "teacher_notes.txt";
+      link.click();
+    };
+  </script>
 </body>
 </html>
