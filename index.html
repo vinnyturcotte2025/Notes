@@ -3,24 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Notes Pro | Real Implementation</title>
+    <title>Clean Voice Notes | Transcript & Structure</title>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #10b981;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --gray: #6b7280;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
@@ -34,12 +23,13 @@
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
+        /* Header */
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -55,6 +45,7 @@
             font-size: 1.1rem;
         }
 
+        /* Main Content */
         .main-content {
             display: flex;
             min-height: 800px;
@@ -63,27 +54,27 @@
         /* Sidebar */
         .sidebar {
             width: 300px;
-            background: var(--light);
+            background: #f8fafc;
             border-right: 1px solid #e2e8f0;
             padding: 25px;
             display: flex;
             flex-direction: column;
         }
 
-        .sessions-header {
+        .sidebar-header {
             margin-bottom: 25px;
         }
 
-        .sessions-header h2 {
-            color: var(--dark);
+        .sidebar-header h2 {
+            color: #1e293b;
             font-size: 1.5rem;
             margin-bottom: 15px;
         }
 
-        #newSessionBtn {
+        #newNoteBtn {
             width: 100%;
             padding: 12px;
-            background: var(--primary);
+            background: #4f46e5;
             color: white;
             border: none;
             border-radius: 10px;
@@ -96,17 +87,17 @@
             gap: 10px;
         }
 
-        #newSessionBtn:hover {
-            background: var(--primary-dark);
+        #newNoteBtn:hover {
+            background: #4338ca;
             transform: translateY(-2px);
         }
 
-        .sessions-list {
+        .notes-list {
             flex: 1;
             overflow-y: auto;
         }
 
-        .session-item {
+        .note-item {
             padding: 15px;
             background: white;
             border-radius: 10px;
@@ -116,60 +107,56 @@
             transition: all 0.3s;
         }
 
-        .session-item:hover {
-            border-color: var(--primary);
+        .note-item:hover {
+            border-color: #4f46e5;
         }
 
-        .session-item.active {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
+        .note-item.active {
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.05);
         }
 
-        .session-title {
+        .note-title {
             font-weight: 600;
-            color: var(--dark);
+            color: #1e293b;
             margin-bottom: 5px;
         }
 
-        .session-time {
+        .note-time {
             font-size: 0.85rem;
-            color: var(--gray);
+            color: #64748b;
         }
 
-        /* Main Content */
-        .content-area {
+        /* Main Area */
+        .main-area {
             flex: 1;
             padding: 30px;
             display: flex;
             flex-direction: column;
         }
 
+        /* Status Bar */
         .status-bar {
-            background: var(--light);
+            background: #f1f5f9;
             padding: 15px 20px;
             border-radius: 10px;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-weight: 600;
+            color: #475569;
         }
 
         .status-indicator {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: var(--secondary);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            background: #10b981;
         }
 
         .status-bar.recording .status-indicator {
-            background: var(--danger);
+            background: #ef4444;
             animation: blink 1s infinite;
         }
 
@@ -178,34 +165,12 @@
             50% { opacity: 0.3; }
         }
 
-        /* Recording Section */
-        .recording-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .waveform-container {
-            flex: 1;
-            background: #1a1a2e;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            min-height: 200px;
-        }
-
-        #waveformCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
+        /* Recording Controls */
         .recording-controls {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 20px;
+            margin-bottom: 25px;
         }
 
         .control-btn {
@@ -224,7 +189,7 @@
         }
 
         #recordBtn {
-            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
         }
 
@@ -234,38 +199,65 @@
         }
 
         #recordBtn.recording {
-            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
-            animation: pulse 2s infinite;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
-        #processBtn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
+        #clearBtn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
         }
 
-        #processBtn:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, #3730a3 100%);
-            transform: translateY(-2px);
+        #clearBtn:hover {
+            background: #e2e8f0;
         }
 
-        #processBtn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        /* Waveform Container */
+        .waveform-container {
+            flex: 1;
+            background: #0f172a;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 25px;
+            min-height: 200px;
         }
 
-        /* Transcription Display */
+        #waveformCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .waveform-label {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* Transcription Area */
         .transcription-container {
-            background: var(--light);
+            background: #f8fafc;
             border-radius: 15px;
             padding: 25px;
-            margin-top: 20px;
+            margin-bottom: 25px;
             max-height: 300px;
             overflow-y: auto;
         }
 
-        .transcription-container h3 {
+        .transcription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
-            color: var(--dark);
+        }
+
+        .transcription-header h3 {
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -274,13 +266,16 @@
         #transcriptionDisplay {
             font-size: 1.1rem;
             line-height: 1.6;
-            color: var(--dark);
+            color: #1e293b;
             white-space: pre-wrap;
         }
 
         /* Notes Display */
-        .notes-section {
-            margin-top: 30px;
+        .notes-display {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
         }
 
         .notes-header {
@@ -291,80 +286,66 @@
         }
 
         .notes-header h3 {
-            font-size: 1.3rem;
-            color: var(--dark);
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .notes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
+        .notes-content {
             max-height: 400px;
             overflow-y: auto;
         }
 
-        .note-card {
-            background: white;
-            border-radius: 12px;
+        .formatted-note {
+            background: #f8fafc;
+            border-radius: 10px;
             padding: 20px;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s;
+            margin-bottom: 15px;
+            border-left: 4px solid #4f46e5;
         }
 
-        .note-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
-        }
-
-        .note-time {
-            font-size: 0.9rem;
-            color: var(--gray);
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
-            background: var(--light);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .note-time-badge {
+            background: #4f46e5;
+            color: white;
             padding: 5px 12px;
             border-radius: 15px;
-            display: inline-block;
-        }
-
-        .note-content {
-            color: var(--dark);
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .note-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            background: var(--light);
-            padding: 4px 12px;
-            border-radius: 15px;
             font-size: 0.85rem;
-            color: var(--gray);
+            font-weight: 600;
         }
 
-        .tag.subject {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
+        .note-text {
+            color: #1e293b;
+            line-height: 1.6;
+            font-size: 1rem;
         }
 
-        .tag.task {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--secondary);
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
 
         /* Export Controls */
         .export-controls {
-            margin-top: 30px;
+            margin-top: 25px;
             padding-top: 25px;
-            border-top: 2px solid #e5e7eb;
+            border-top: 2px solid #e2e8f0;
         }
 
         .export-buttons {
@@ -385,19 +366,22 @@
             gap: 10px;
         }
 
-        #exportPDF {
-            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+        #exportTXT {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
         }
 
-        #exportTXT {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
+        #exportTXT:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
         }
 
         #exportJSON {
-            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
+        }
+
+        #exportJSON:hover {
+            background: linear-gradient(135deg, #0da271 0%, #047857 100%);
         }
 
         /* Modal */
@@ -424,7 +408,7 @@
 
         .modal h2 {
             margin-bottom: 20px;
-            color: var(--dark);
+            color: #1e293b;
         }
 
         .form-group {
@@ -434,23 +418,21 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--dark);
+            color: #475569;
             font-weight: 600;
         }
 
-        .form-group input,
-        .form-group textarea {
+        .form-group input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 1rem;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #4f46e5;
         }
 
         .modal-buttons {
@@ -468,12 +450,12 @@
         }
 
         .cancel-btn {
-            background: var(--light);
-            color: var(--dark);
+            background: #f1f5f9;
+            color: #475569;
         }
 
-        .confirm-btn {
-            background: var(--primary);
+        .save-btn {
+            background: #4f46e5;
             color: white;
         }
 
@@ -489,10 +471,6 @@
                 border-bottom: 1px solid #e2e8f0;
             }
             
-            .notes-container {
-                grid-template-columns: 1fr;
-            }
-            
             .control-btn {
                 min-width: auto;
                 width: 100%;
@@ -501,85 +479,90 @@
             .recording-controls {
                 flex-direction: column;
             }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
-            <h1>🎤 Voice Notes Pro</h1>
-            <p>Real-time transcription with live waveform & PDF export</p>
+            <h1>🗣️ Clean Voice Notes</h1>
+            <p>Real-time transcription with structured notes - No AI, just clean text</p>
         </div>
 
         <div class="main-content">
             <!-- Sidebar -->
             <aside class="sidebar">
-                <div class="sessions-header">
-                    <h2>Sessions</h2>
-                    <button id="newSessionBtn">
-                        <i class="fas fa-plus"></i> New Session
+                <div class="sidebar-header">
+                    <h2>📝 Notes</h2>
+                    <button id="newNoteBtn">
+                        <i class="fas fa-plus"></i> New Note
                     </button>
                 </div>
-                <div class="sessions-list" id="sessionsList">
-                    <!-- Sessions will be added here -->
+                <div class="notes-list" id="notesList">
+                    <!-- Notes will be added here -->
                 </div>
             </aside>
 
-            <!-- Main Content -->
-            <main class="content-area">
+            <!-- Main Area -->
+            <main class="main-area">
                 <!-- Status Bar -->
                 <div class="status-bar" id="statusBar">
                     <div class="status-indicator"></div>
                     <span id="statusText">Ready to record</span>
                 </div>
 
-                <!-- Recording Section -->
-                <section class="recording-section">
-                    <!-- Waveform Visualization -->
-                    <div class="waveform-container">
-                        <canvas id="waveformCanvas"></canvas>
-                    </div>
+                <!-- Recording Controls -->
+                <div class="recording-controls">
+                    <button class="control-btn" id="recordBtn">
+                        <i class="fas fa-microphone"></i> Start Recording
+                    </button>
+                    <button class="control-btn" id="clearBtn">
+                        <i class="fas fa-eraser"></i> Clear
+                    </button>
+                </div>
 
-                    <!-- Controls -->
-                    <div class="recording-controls">
-                        <button class="control-btn" id="recordBtn">
-                            <i class="fas fa-microphone"></i> Start Recording
-                        </button>
-                        <button class="control-btn" id="processBtn" disabled>
-                            <i class="fas fa-robot"></i> Process Notes
-                        </button>
-                    </div>
+                <!-- Waveform Visualization -->
+                <div class="waveform-container">
+                    <canvas id="waveformCanvas"></canvas>
+                    <div class="waveform-label">Live Audio Waveform</div>
+                </div>
 
-                    <!-- Live Transcription -->
-                    <div class="transcription-container">
+                <!-- Live Transcription -->
+                <div class="transcription-container">
+                    <div class="transcription-header">
                         <h3><i class="fas fa-keyboard"></i> Live Transcription</h3>
-                        <div id="transcriptionDisplay">
-                            Start speaking to see live transcription here...
+                    </div>
+                    <div id="transcriptionDisplay">
+                        Click "Start Recording" and speak to begin transcription...
+                    </div>
+                </div>
+
+                <!-- Structured Notes Display -->
+                <div class="notes-display">
+                    <div class="notes-header">
+                        <h3><i class="fas fa-sticky-note"></i> Structured Notes</h3>
+                    </div>
+                    <div class="notes-content" id="notesContent">
+                        <div class="empty-state">
+                            <div class="icon">📝</div>
+                            <h3>No structured notes yet</h3>
+                            <p>Your formatted notes will appear here</p>
                         </div>
                     </div>
-                </section>
-
-                <!-- Notes Display -->
-                <section class="notes-section">
-                    <div class="notes-header">
-                        <h3><i class="fas fa-sticky-note"></i> Processed Notes</h3>
-                    </div>
-                    <div class="notes-container" id="notesContainer">
-                        <!-- Notes will be added here -->
-                    </div>
-                </section>
+                </div>
 
                 <!-- Export Controls -->
                 <div class="export-controls">
                     <div class="export-buttons">
-                        <button class="export-btn" id="exportPDF">
-                            <i class="fas fa-file-pdf"></i> Export PDF
-                        </button>
                         <button class="export-btn" id="exportTXT">
-                            <i class="fas fa-file-alt"></i> Export TXT
+                            <i class="fas fa-file-alt"></i> Export as Text
                         </button>
                         <button class="export-btn" id="exportJSON">
-                            <i class="fas fa-code"></i> Export JSON
+                            <i class="fas fa-code"></i> Export as JSON
                         </button>
                     </div>
                 </div>
@@ -587,63 +570,58 @@
         </div>
     </div>
 
-    <!-- Session Modal -->
-    <div class="modal" id="sessionModal">
+    <!-- Note Modal -->
+    <div class="modal" id="noteModal">
         <div class="modal-content">
-            <h2>New Session</h2>
+            <h2>Save Note</h2>
             <div class="form-group">
-                <label for="sessionName">Session Name</label>
-                <input type="text" id="sessionName" placeholder="Enter session name">
-            </div>
-            <div class="form-group">
-                <label for="sessionDescription">Description (Optional)</label>
-                <textarea id="sessionDescription" rows="3" placeholder="Session description"></textarea>
+                <label for="noteTitle">Note Title</label>
+                <input type="text" id="noteTitle" placeholder="Enter note title">
             </div>
             <div class="modal-buttons">
                 <button class="modal-btn cancel-btn" id="cancelBtn">Cancel</button>
-                <button class="modal-btn confirm-btn" id="createBtn">Create</button>
+                <button class="modal-btn save-btn" id="saveBtn">Save</button>
             </div>
         </div>
     </div>
 
     <script>
         // ==================== REAL IMPLEMENTATION ====================
-        // This uses actual browser APIs that WORK in modern browsers
+        // Working speech recognition with real waveform visualization
 
         class VoiceNotesApp {
             constructor() {
-                // App State
                 this.state = {
-                    currentSession: null,
-                    sessions: JSON.parse(localStorage.getItem('voiceNotesSessions')) || [],
+                    currentNote: null,
+                    notes: JSON.parse(localStorage.getItem('cleanVoiceNotes')) || [],
                     isRecording: false,
                     isTranscribing: false,
                     audioContext: null,
                     analyser: null,
-                    dataArray: null,
+                    mediaStream: null,
                     mediaRecorder: null,
                     audioChunks: [],
                     recognition: null,
                     transcription: [],
-                    notes: [],
+                    recordingStartTime: null,
                     waveformAnimationId: null,
-                    recordingStartTime: null
+                    dataArray: null
                 };
 
                 // DOM Elements
                 this.elements = {
-                    sessionsList: document.getElementById('sessionsList'),
-                    sessionModal: document.getElementById('sessionModal'),
+                    notesList: document.getElementById('notesList'),
+                    noteModal: document.getElementById('noteModal'),
                     statusBar: document.getElementById('statusBar'),
                     statusText: document.getElementById('statusText'),
                     waveformCanvas: document.getElementById('waveformCanvas'),
                     recordBtn: document.getElementById('recordBtn'),
-                    processBtn: document.getElementById('processBtn'),
+                    clearBtn: document.getElementById('clearBtn'),
                     transcriptionDisplay: document.getElementById('transcriptionDisplay'),
-                    notesContainer: document.getElementById('notesContainer'),
-                    exportPDF: document.getElementById('exportPDF'),
+                    notesContent: document.getElementById('notesContent'),
                     exportTXT: document.getElementById('exportTXT'),
-                    exportJSON: document.getElementById('exportJSON')
+                    exportJSON: document.getElementById('exportJSON'),
+                    noteTitle: document.getElementById('noteTitle')
                 };
 
                 this.init();
@@ -652,30 +630,77 @@
             init() {
                 this.setupAudioContext();
                 this.setupSpeechRecognition();
-                this.renderSessions();
+                this.renderNotesList();
                 this.setupEventListeners();
                 
-                if (this.state.sessions.length === 0) {
-                    this.createSession('Sample Session', 'First recording session');
+                if (this.state.notes.length === 0) {
+                    this.createNote('First Note');
                 } else {
-                    this.selectSession(0);
+                    this.selectNote(0);
                 }
+
+                // Initialize waveform
+                this.drawEmptyWaveform();
             }
 
             // ==================== AUDIO & WAVEFORM ====================
-            
+
             setupAudioContext() {
                 try {
                     this.state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     this.state.analyser = this.state.audioContext.createAnalyser();
-                    this.state.analyser.fftSize = 256;
+                    this.state.analyser.fftSize = 2048; // More data for better waveform
                     const bufferLength = this.state.analyser.frequencyBinCount;
                     this.state.dataArray = new Uint8Array(bufferLength);
-                    
-                    this.drawSilentWaveform();
                 } catch (error) {
-                    console.log('Audio context not available:', error);
+                    console.log('Audio context initialization:', error);
                 }
+            }
+
+            drawEmptyWaveform() {
+                const canvas = this.elements.waveformCanvas;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+
+                // Clear with dark background
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, width, height);
+
+                // Draw grid
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.lineWidth = 1;
+
+                // Vertical lines
+                for (let i = 1; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo((width / 4) * i, 0);
+                    ctx.lineTo((width / 4) * i, height);
+                    ctx.stroke();
+                }
+
+                // Horizontal lines
+                for (let i = 1; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, (height / 4) * i);
+                    ctx.lineTo(width, (height / 4) * i);
+                    ctx.stroke();
+                }
+
+                // Draw center line
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.stroke();
+
+                // Draw "Ready" text
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Ready to Record', width / 2, height / 2);
             }
 
             drawWaveform() {
@@ -692,24 +717,22 @@
                 // Get audio data
                 this.state.analyser.getByteTimeDomainData(this.state.dataArray);
 
-                // Clear canvas with gradient background
-                const gradient = ctx.createLinearGradient(0, 0, 0, height);
-                gradient.addColorStop(0, '#1a1a2e');
-                gradient.addColorStop(1, '#16213e');
-                ctx.fillStyle = gradient;
+                // Clear canvas
+                ctx.fillStyle = '#0f172a';
                 ctx.fillRect(0, 0, width, height);
 
                 // Draw waveform
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#6366f1';
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#4f46e5';
                 ctx.beginPath();
 
                 const sliceWidth = width / this.state.dataArray.length;
                 let x = 0;
 
                 for (let i = 0; i < this.state.dataArray.length; i++) {
+                    // Normalize data to -1 to 1
                     const v = this.state.dataArray[i] / 128.0;
-                    const y = v * height / 2;
+                    const y = (v * height) / 2;
 
                     if (i === 0) {
                         ctx.moveTo(x, y);
@@ -720,11 +743,10 @@
                     x += sliceWidth;
                 }
 
-                ctx.lineTo(width, height / 2);
                 ctx.stroke();
 
                 // Draw center line
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(0, height / 2);
@@ -734,42 +756,15 @@
                 this.state.waveformAnimationId = requestAnimationFrame(() => this.drawWaveform());
             }
 
-            drawSilentWaveform() {
-                const canvas = this.elements.waveformCanvas;
-                const ctx = canvas.getContext('2d');
-                const width = canvas.width = canvas.offsetWidth;
-                const height = canvas.height = canvas.offsetHeight;
-
-                // Clear with gradient background
-                const gradient = ctx.createLinearGradient(0, 0, 0, height);
-                gradient.addColorStop(0, '#1a1a2e');
-                gradient.addColorStop(1, '#16213e');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, width, height);
-
-                // Draw center line
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(0, height / 2);
-                ctx.lineTo(width, height / 2);
-                ctx.stroke();
-
-                // Draw "Ready to record" text
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.font = '18px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('Ready to record', width / 2, height / 2);
-            }
-
             // ==================== SPEECH RECOGNITION ====================
 
             setupSpeechRecognition() {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 
                 if (!SpeechRecognition) {
-                    console.log('Speech recognition not supported');
-                    this.elements.statusText.textContent = 'Speech recognition not available';
+                    console.log('Speech recognition not available');
+                    this.elements.statusText.textContent = 'Speech recognition not supported in this browser';
+                    this.elements.recordBtn.disabled = true;
                     return;
                 }
 
@@ -777,6 +772,7 @@
                 this.state.recognition.continuous = true;
                 this.state.recognition.interimResults = true;
                 this.state.recognition.lang = 'en-US';
+                this.state.recognition.maxAlternatives = 1;
 
                 this.state.recognition.onstart = () => {
                     this.state.isTranscribing = true;
@@ -791,19 +787,19 @@
                         const transcript = event.results[i][0].transcript;
                         
                         if (event.results[i].isFinal) {
-                            finalTranscript += transcript + ' ';
+                            finalTranscript += transcript;
                             
                             // Add to transcription with timestamp
                             const timeFromStart = Date.now() - this.state.recordingStartTime;
                             const timestamp = this.formatTime(timeFromStart);
                             
                             this.state.transcription.push({
-                                text: transcript,
+                                text: transcript.trim(),
                                 timestamp: timestamp,
                                 isFinal: true
                             });
                         } else {
-                            interimTranscript += transcript;
+                            interimTranscript = transcript;
                         }
                     }
 
@@ -812,12 +808,17 @@
 
                 this.state.recognition.onerror = (event) => {
                     console.log('Speech recognition error:', event.error);
+                    if (event.error === 'no-speech') {
+                        this.elements.statusText.textContent = 'No speech detected';
+                    }
                 };
 
                 this.state.recognition.onend = () => {
                     this.state.isTranscribing = false;
-                    this.elements.statusText.textContent = 'Transcription complete';
-                    this.elements.processBtn.disabled = false;
+                    if (!this.state.isRecording) {
+                        this.elements.statusText.textContent = 'Transcription complete';
+                        this.structureNotes();
+                    }
                 };
             }
 
@@ -825,6 +826,11 @@
 
             async startRecording() {
                 try {
+                    // Reset transcription
+                    this.state.transcription = [];
+                    this.state.recordingStartTime = Date.now();
+                    this.updateTranscriptionDisplay('');
+
                     // Get microphone access
                     const stream = await navigator.mediaDevices.getUserMedia({ 
                         audio: {
@@ -833,6 +839,9 @@
                             sampleRate: 44100
                         }
                     });
+
+                    this.state.mediaStream = stream;
+                    this.state.audioChunks = [];
 
                     // Setup audio processing for waveform
                     if (this.state.audioContext) {
@@ -843,9 +852,6 @@
 
                     // Setup MediaRecorder
                     this.state.mediaRecorder = new MediaRecorder(stream);
-                    this.state.audioChunks = [];
-                    this.state.transcription = [];
-                    this.state.recordingStartTime = Date.now();
 
                     this.state.mediaRecorder.ondataavailable = (event) => {
                         if (event.data.size > 0) {
@@ -856,27 +862,22 @@
                     this.state.mediaRecorder.onstop = () => {
                         const audioBlob = new Blob(this.state.audioChunks, { type: 'audio/webm' });
                         
-                        // Save to current session
-                        if (this.state.currentSession !== null) {
+                        // Save to current note
+                        if (this.state.currentNote !== null) {
                             const reader = new FileReader();
                             reader.readAsDataURL(audioBlob);
                             reader.onloadend = () => {
-                                this.state.sessions[this.state.currentSession].audio = reader.result;
-                                this.state.sessions[this.state.currentSession].transcription = this.state.transcription;
+                                this.state.notes[this.state.currentNote].audio = reader.result;
+                                this.state.notes[this.state.currentNote].transcription = this.state.transcription;
                                 this.saveToLocalStorage();
                             };
-                        }
-
-                        // Stop speech recognition
-                        if (this.state.recognition && this.state.isTranscribing) {
-                            this.state.recognition.stop();
                         }
 
                         // Stop waveform
                         if (this.state.waveformAnimationId) {
                             cancelAnimationFrame(this.state.waveformAnimationId);
                         }
-                        this.drawSilentWaveform();
+                        this.drawEmptyWaveform();
 
                         // Update UI
                         this.elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Recording';
@@ -885,7 +886,7 @@
                     };
 
                     // Start recording
-                    this.state.mediaRecorder.start();
+                    this.state.mediaRecorder.start(1000); // Collect data every second
                     this.state.isRecording = true;
                     
                     // Start speech recognition
@@ -898,7 +899,7 @@
                     this.elements.recordBtn.classList.add('recording');
                     this.elements.statusBar.classList.add('recording');
                     this.elements.statusText.textContent = 'Recording...';
-                    this.elements.processBtn.disabled = true;
+                    this.elements.clearBtn.disabled = true;
 
                 } catch (error) {
                     console.error('Error accessing microphone:', error);
@@ -911,366 +912,285 @@
                     this.state.mediaRecorder.stop();
                     this.state.isRecording = false;
                     
-                    // Stop all audio tracks
-                    if (this.state.mediaRecorder.stream) {
-                        this.state.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    // Stop speech recognition
+                    if (this.state.recognition && this.state.isTranscribing) {
+                        this.state.recognition.stop();
                     }
+                    
+                    // Stop audio tracks
+                    if (this.state.mediaStream) {
+                        this.state.mediaStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    this.elements.clearBtn.disabled = false;
                 }
             }
 
-            toggleRecording() {
-                if (!this.state.isRecording) {
-                    this.startRecording();
-                } else {
-                    this.stopRecording();
-                }
+            clearTranscription() {
+                this.state.transcription = [];
+                this.updateTranscriptionDisplay('Click "Start Recording" and speak to begin transcription...');
+                this.clearStructuredNotes();
+                this.elements.statusText.textContent = 'Cleared';
+                setTimeout(() => {
+                    this.elements.statusText.textContent = 'Ready to record';
+                }, 1000);
             }
 
-            // ==================== NOTE PROCESSING ====================
+            // ==================== NOTE STRUCTURING ====================
 
-            processNotes() {
-                if (this.state.transcription.length === 0) {
-                    alert('No transcription to process');
-                    return;
-                }
+            structureNotes() {
+                if (this.state.transcription.length === 0) return;
 
-                this.elements.statusText.textContent = 'Processing notes...';
+                // Group transcription into logical paragraphs
+                const paragraphs = this.groupIntoParagraphs(this.state.transcription);
                 
-                // Group transcription into notes based on time gaps
-                const notes = this.groupTranscriptionIntoNotes(this.state.transcription);
-                
-                // Analyze each note for tasks and subjects
-                const processedNotes = notes.map((note, index) => {
-                    const analysis = this.analyzeNote(note.text);
+                // Format each paragraph
+                const formattedNotes = paragraphs.map(paragraph => {
                     return {
-                        id: index + 1,
-                        time: note.timestamp,
-                        content: note.text,
-                        task: analysis.task,
-                        subject: analysis.subject,
-                        tags: analysis.tags
+                        timestamp: paragraph.timestamp,
+                        text: this.cleanText(paragraph.text),
+                        duration: paragraph.duration
                     };
                 });
 
-                this.state.notes = processedNotes;
-                this.renderNotes();
-                this.elements.statusText.textContent = 'Notes processed successfully';
-                
-                // Save to session
-                if (this.state.currentSession !== null) {
-                    this.state.sessions[this.state.currentSession].notes = processedNotes;
+                // Display structured notes
+                this.displayStructuredNotes(formattedNotes);
+
+                // Save to current note
+                if (this.state.currentNote !== null) {
+                    this.state.notes[this.state.currentNote].structuredNotes = formattedNotes;
                     this.saveToLocalStorage();
                 }
             }
 
-            groupTranscriptionIntoNotes(transcription) {
-                const notes = [];
-                let currentNote = null;
-                let lastTimestamp = 0;
+            groupIntoParagraphs(transcription) {
+                const paragraphs = [];
+                let currentParagraph = null;
+                let lastTime = 0;
 
                 transcription.forEach(item => {
                     if (!item.isFinal) return;
-                    
+
                     const currentTime = this.timeToSeconds(item.timestamp);
                     
-                    // If gap is more than 10 seconds or first item, start new note
-                    if (!currentNote || (currentTime - lastTimestamp) > 10) {
-                        if (currentNote) {
-                            notes.push(currentNote);
+                    // If gap > 5 seconds or first item, start new paragraph
+                    if (!currentParagraph || (currentTime - lastTime) > 5) {
+                        if (currentParagraph) {
+                            paragraphs.push(currentParagraph);
                         }
-                        currentNote = {
+                        currentParagraph = {
                             text: item.text,
-                            timestamp: item.timestamp
+                            timestamp: item.timestamp,
+                            startTime: currentTime
                         };
                     } else {
-                        // Continue current note
-                        currentNote.text += ' ' + item.text;
+                        // Continue current paragraph
+                        currentParagraph.text += ' ' + item.text;
                     }
                     
-                    lastTimestamp = currentTime;
+                    lastTime = currentTime;
                 });
 
-                // Add the last note
-                if (currentNote) {
-                    notes.push(currentNote);
+                // Add the last paragraph
+                if (currentParagraph) {
+                    const endTime = lastTime;
+                    currentParagraph.duration = endTime - currentParagraph.startTime;
+                    paragraphs.push(currentParagraph);
                 }
 
-                return notes;
+                return paragraphs;
             }
 
-            analyzeNote(text) {
-                // Simple keyword analysis (in a real app, this would use NLP)
-                const keywords = {
-                    tasks: ['need', 'should', 'must', 'will', 'going to', 'plan to', 'create', 'make', 'do', 'fix', 'implement'],
-                    subjects: ['project', 'meeting', 'client', 'team', 'code', 'design', 'budget', 'timeline', 'feature']
-                };
-
-                const words = text.toLowerCase().split(/\s+/);
-                
-                // Find tasks
-                let task = 'General discussion';
-                for (const taskWord of keywords.tasks) {
-                    if (text.toLowerCase().includes(taskWord)) {
-                        const startIndex = text.toLowerCase().indexOf(taskWord);
-                        const taskText = text.substring(startIndex, Math.min(startIndex + 50, text.length));
-                        task = taskText.trim();
-                        if (task.length > 40) task = task.substring(0, 40) + '...';
-                        break;
-                    }
-                }
-
-                // Find subjects
-                let subject = 'General';
-                for (const subjectWord of keywords.subjects) {
-                    if (text.toLowerCase().includes(subjectWord)) {
-                        subject = subjectWord.charAt(0).toUpperCase() + subjectWord.slice(1);
-                        break;
-                    }
-                }
-
-                // Generate tags
-                const tags = [];
-                if (text.toLowerCase().includes('urgent') || text.toLowerCase().includes('important')) {
-                    tags.push('priority');
-                }
-                if (text.toLowerCase().includes('tomorrow') || text.toLowerCase().includes('today')) {
-                    tags.push('time-sensitive');
-                }
-                tags.push(subject.toLowerCase());
-
-                return { task, subject, tags };
+            cleanText(text) {
+                // Basic text cleaning
+                return text
+                    .replace(/\s+/g, ' ') // Remove extra spaces
+                    .replace(/\s([.,!?])/g, '$1') // Fix spacing before punctuation
+                    .replace(/^./, str => str.toUpperCase()) // Capitalize first letter
+                    .trim();
             }
 
-            // ==================== RENDERING ====================
+            // ==================== DISPLAY FUNCTIONS ====================
 
             updateTranscriptionDisplay(interim) {
                 let displayText = '';
                 
-                // Add final transcriptions
+                // Add all final transcriptions
                 this.state.transcription.forEach(item => {
                     if (item.isFinal) {
                         displayText += `[${item.timestamp}] ${item.text}\n`;
                     }
                 });
                 
-                // Add interim transcription
-                if (interim) {
-                    displayText += `(Listening...) ${interim}`;
+                // Add interim transcription if available
+                if (interim && interim.trim()) {
+                    displayText += `...${interim}`;
                 }
                 
-                this.elements.transcriptionDisplay.textContent = displayText || 'Start speaking to see live transcription here...';
+                this.elements.transcriptionDisplay.textContent = displayText || 'Click "Start Recording" and speak to begin transcription...';
                 
-                // Auto-scroll
+                // Auto-scroll to bottom
                 this.elements.transcriptionDisplay.scrollTop = this.elements.transcriptionDisplay.scrollHeight;
             }
 
-            renderNotes() {
-                const container = this.elements.notesContainer;
-                container.innerHTML = '';
-
-                if (this.state.notes.length === 0) {
+            displayStructuredNotes(notes) {
+                const container = this.elements.notesContent;
+                
+                if (notes.length === 0) {
                     container.innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: var(--gray);">
-                            <i class="fas fa-sticky-note" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
-                            <h3>No notes yet</h3>
-                            <p>Process your transcription to generate organized notes</p>
+                        <div class="empty-state">
+                            <div class="icon">📝</div>
+                            <h3>No structured notes yet</h3>
+                            <p>Your formatted notes will appear here</p>
                         </div>
                     `;
                     return;
                 }
 
-                this.state.notes.forEach(note => {
-                    const noteCard = document.createElement('div');
-                    noteCard.className = 'note-card';
-                    
-                    noteCard.innerHTML = `
-                        <div class="note-time">${note.time}</div>
-                        <div class="note-content">${note.content}</div>
-                        <div class="note-tags">
-                            <span class="tag subject">${note.subject}</span>
-                            <span class="tag task">${note.task}</span>
-                            ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                let html = '';
+                notes.forEach((note, index) => {
+                    html += `
+                        <div class="formatted-note">
+                            <div class="note-meta">
+                                <span class="note-time-badge">${note.timestamp}</span>
+                                <span style="color: #64748b; font-size: 0.9rem;">
+                                    ${note.duration ? `Duration: ${note.duration}s` : ''}
+                                </span>
+                            </div>
+                            <div class="note-text">
+                                ${note.text}
+                            </div>
                         </div>
                     `;
-                    
-                    container.appendChild(noteCard);
                 });
+
+                container.innerHTML = html;
             }
 
-            renderSessions() {
-                const container = this.elements.sessionsList;
+            clearStructuredNotes() {
+                this.elements.notesContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <h3>No structured notes yet</h3>
+                        <p>Your formatted notes will appear here</p>
+                    </div>
+                `;
+            }
+
+            renderNotesList() {
+                const container = this.elements.notesList;
                 container.innerHTML = '';
 
-                this.state.sessions.forEach((session, index) => {
-                    const sessionItem = document.createElement('div');
-                    sessionItem.className = 'session-item';
-                    if (this.state.currentSession === index) {
-                        sessionItem.classList.add('active');
+                this.state.notes.forEach((note, index) => {
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'note-item';
+                    if (this.state.currentNote === index) {
+                        noteItem.classList.add('active');
                     }
                     
-                    const date = new Date(session.created || Date.now());
+                    const date = new Date(note.created || Date.now());
                     const formattedDate = date.toLocaleDateString('en-US', {
                         month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                        day: 'numeric'
                     });
                     
-                    sessionItem.innerHTML = `
-                        <div class="session-title">${session.name}</div>
-                        <div class="session-time">${formattedDate}</div>
-                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 5px;">
-                            ${session.notes ? session.notes.length : 0} notes
+                    noteItem.innerHTML = `
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-time">${formattedDate}</div>
+                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">
+                            ${note.transcription ? note.transcription.length : 0} segments
                         </div>
                     `;
                     
-                    sessionItem.addEventListener('click', () => this.selectSession(index));
-                    container.appendChild(sessionItem);
+                    noteItem.addEventListener('click', () => this.selectNote(index));
+                    container.appendChild(noteItem);
                 });
             }
 
-            // ==================== SESSION MANAGEMENT ====================
+            // ==================== NOTE MANAGEMENT ====================
 
-            createSession(name, description) {
-                const newSession = {
+            createNote(title) {
+                const newNote = {
                     id: Date.now(),
-                    name: name || 'New Session',
-                    description: description || '',
+                    title: title || 'New Note',
                     created: new Date().toISOString(),
                     audio: null,
                     transcription: [],
-                    notes: []
+                    structuredNotes: []
                 };
                 
-                this.state.sessions.push(newSession);
+                this.state.notes.push(newNote);
                 this.saveToLocalStorage();
-                this.renderSessions();
-                this.selectSession(this.state.sessions.length - 1);
+                this.renderNotesList();
+                this.selectNote(this.state.notes.length - 1);
             }
 
-            selectSession(index) {
-                this.state.currentSession = index;
-                this.renderSessions();
+            selectNote(index) {
+                this.state.currentNote = index;
+                this.renderNotesList();
                 
-                const session = this.state.sessions[index];
-                this.state.transcription = session.transcription || [];
-                this.state.notes = session.notes || [];
+                const note = this.state.notes[index];
+                this.state.transcription = note.transcription || [];
                 
-                // Update UI
+                // Update displays
                 this.updateTranscriptionDisplay('');
-                this.renderNotes();
-                this.elements.processBtn.disabled = this.state.transcription.length === 0;
+                if (note.structuredNotes && note.structuredNotes.length > 0) {
+                    this.displayStructuredNotes(note.structuredNotes);
+                } else {
+                    this.clearStructuredNotes();
+                }
                 
                 // Update status
-                this.elements.statusText.textContent = `Loaded: ${session.name}`;
+                this.elements.statusText.textContent = `Loaded: ${note.title}`;
                 setTimeout(() => {
                     this.elements.statusText.textContent = 'Ready to record';
-                }, 2000);
+                }, 1500);
             }
 
             // ==================== EXPORT FUNCTIONS ====================
 
-            exportPDF() {
-                if (this.state.notes.length === 0) {
+            exportAsText() {
+                const note = this.state.notes[this.state.currentNote];
+                if (!note || (!note.transcription.length && !note.structuredNotes.length)) {
                     alert('No notes to export');
                     return;
                 }
 
-                const session = this.state.sessions[this.state.currentSession];
+                let content = `=== ${note.title} ===\n`;
+                content += `Created: ${new Date(note.created).toLocaleString()}\n\n`;
                 
-                // Create PDF using jsPDF (if available) or simple text download
-                try {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    
-                    // Add title
-                    doc.setFontSize(20);
-                    doc.text(`Voice Notes: ${session.name}`, 20, 20);
-                    
-                    doc.setFontSize(12);
-                    doc.text(`Date: ${new Date(session.created).toLocaleDateString()}`, 20, 30);
-                    
-                    if (session.description) {
-                        doc.text(`Description: ${session.description}`, 20, 36);
-                    }
-                    
-                    // Add notes
-                    let y = 50;
-                    doc.setFontSize(14);
-                    doc.text('Notes:', 20, y);
-                    y += 10;
-                    
-                    doc.setFontSize(11);
-                    this.state.notes.forEach((note, index) => {
-                        if (y > 270) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                        
-                        doc.text(`[${note.time}] ${note.subject}`, 20, y);
-                        y += 7;
-                        doc.text(`Task: ${note.task}`, 25, y);
-                        y += 7;
-                        
-                        // Split content into lines
-                        const lines = doc.splitTextToSize(note.content, 170);
-                        lines.forEach(line => {
-                            doc.text(line, 25, y);
-                            y += 7;
-                        });
-                        
-                        y += 5;
+                if (note.structuredNotes && note.structuredNotes.length > 0) {
+                    content += 'STRUCTURED NOTES:\n';
+                    content += '=================\n\n';
+                    note.structuredNotes.forEach((item, index) => {
+                        content += `[${item.timestamp}] ${item.text}\n\n`;
                     });
-                    
-                    // Save PDF
-                    doc.save(`voice-notes-${session.name.toLowerCase().replace(/\s+/g, '-')}.pdf`);
-                    
-                } catch (error) {
-                    console.log('jsPDF not available, using text export');
-                    this.exportTXT();
-                }
-            }
-
-            exportTXT() {
-                if (this.state.notes.length === 0) {
-                    alert('No notes to export');
-                    return;
+                } else if (note.transcription.length > 0) {
+                    content += 'TRANSCRIPTION:\n';
+                    content += '==============\n\n';
+                    note.transcription.forEach(item => {
+                        if (item.isFinal) {
+                            content += `[${item.timestamp}] ${item.text}\n`;
+                        }
+                    });
                 }
 
-                const session = this.state.sessions[this.state.currentSession];
-                let content = `VOICE NOTES EXPORT\n`;
-                content += `==================\n\n`;
-                content += `Session: ${session.name}\n`;
-                content += `Date: ${new Date(session.created).toLocaleDateString()}\n`;
-                if (session.description) content += `Description: ${session.description}\n`;
-                content += `\n`.repeat(2);
-                content += `NOTES\n`;
-                content += `=====\n\n`;
-                
-                this.state.notes.forEach((note, index) => {
-                    content += `Note ${index + 1} [${note.time}]\n`;
-                    content += `Subject: ${note.subject}\n`;
-                    content += `Task: ${note.task}\n`;
-                    content += `Content: ${note.content}\n`;
-                    content += `Tags: ${note.tags.join(', ')}\n`;
-                    content += `\n`.repeat(2);
-                });
-                
-                this.downloadFile(content, 'text/plain', `${session.name.toLowerCase().replace(/\s+/g, '-')}.txt`);
+                this.downloadFile(content, 'text/plain', `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`);
             }
 
-            exportJSON() {
-                const session = this.state.sessions[this.state.currentSession];
+            exportAsJSON() {
+                const note = this.state.notes[this.state.currentNote];
                 const exportData = {
-                    session: session.name,
-                    date: session.created,
-                    description: session.description,
-                    notes: this.state.notes,
-                    transcription: this.state.transcription
+                    note: {
+                        title: note.title,
+                        created: note.created,
+                        transcription: note.transcription,
+                        structuredNotes: note.structuredNotes || []
+                    }
                 };
                 
                 const content = JSON.stringify(exportData, null, 2);
-                this.downloadFile(content, 'application/json', `${session.name.toLowerCase().replace(/\s+/g, '-')}.json`);
+                this.downloadFile(content, 'application/json', `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`);
             }
 
             downloadFile(content, mimeType, filename) {
@@ -1300,49 +1220,52 @@
             }
 
             saveToLocalStorage() {
-                localStorage.setItem('voiceNotesSessions', JSON.stringify(this.state.sessions));
+                localStorage.setItem('cleanVoiceNotes', JSON.stringify(this.state.notes));
             }
 
             // ==================== EVENT HANDLERS ====================
 
             setupEventListeners() {
                 // Recording controls
-                this.elements.recordBtn.addEventListener('click', () => this.toggleRecording());
-                this.elements.processBtn.addEventListener('click', () => this.processNotes());
+                this.elements.recordBtn.addEventListener('click', () => {
+                    if (!this.state.isRecording) {
+                        this.startRecording();
+                    } else {
+                        this.stopRecording();
+                    }
+                });
+
+                this.elements.clearBtn.addEventListener('click', () => this.clearTranscription());
                 
                 // Export buttons
-                this.elements.exportPDF.addEventListener('click', () => this.exportPDF());
-                this.elements.exportTXT.addEventListener('click', () => this.exportTXT());
-                this.elements.exportJSON.addEventListener('click', () => this.exportJSON());
+                this.elements.exportTXT.addEventListener('click', () => this.exportAsText());
+                this.elements.exportJSON.addEventListener('click', () => this.exportAsJSON());
                 
-                // Session modal
-                document.getElementById('newSessionBtn').addEventListener('click', () => {
-                    document.getElementById('sessionName').value = '';
-                    document.getElementById('sessionDescription').value = '';
-                    this.elements.sessionModal.style.display = 'flex';
+                // Note creation
+                document.getElementById('newNoteBtn').addEventListener('click', () => {
+                    this.elements.noteTitle.value = '';
+                    this.elements.noteModal.style.display = 'flex';
                 });
                 
                 document.getElementById('cancelBtn').addEventListener('click', () => {
-                    this.elements.sessionModal.style.display = 'none';
+                    this.elements.noteModal.style.display = 'none';
                 });
                 
-                document.getElementById('createBtn').addEventListener('click', () => {
-                    const name = document.getElementById('sessionName').value.trim();
-                    const description = document.getElementById('sessionDescription').value.trim();
-                    
-                    if (!name) {
-                        alert('Please enter a session name');
+                document.getElementById('saveBtn').addEventListener('click', () => {
+                    const title = this.elements.noteTitle.value.trim();
+                    if (!title) {
+                        alert('Please enter a note title');
                         return;
                     }
                     
-                    this.createSession(name, description);
-                    this.elements.sessionModal.style.display = 'none';
+                    this.createNote(title);
+                    this.elements.noteModal.style.display = 'none';
                 });
                 
                 // Close modal on outside click
                 window.addEventListener('click', (e) => {
-                    if (e.target === this.elements.sessionModal) {
-                        this.elements.sessionModal.style.display = 'none';
+                    if (e.target === this.elements.noteModal) {
+                        this.elements.noteModal.style.display = 'none';
                     }
                 });
                 
@@ -1350,7 +1273,11 @@
                 document.addEventListener('keydown', (e) => {
                     if (e.ctrlKey && e.key === ' ') {
                         e.preventDefault();
-                        this.toggleRecording();
+                        if (!this.state.isRecording) {
+                            this.startRecording();
+                        } else {
+                            this.stopRecording();
+                        }
                     }
                     if (e.key === 'Escape' && this.state.isRecording) {
                         this.stopRecording();
@@ -1360,22 +1287,22 @@
                 // Handle window resize
                 window.addEventListener('resize', () => {
                     if (!this.state.isRecording) {
-                        this.drawSilentWaveform();
+                        this.drawEmptyWaveform();
                     }
                 });
             }
         }
 
-        // Initialize app when page loads
+        // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
             new VoiceNotesApp();
         });
 
-        // Add Font Awesome dynamically
-        const faLink = document.createElement('link');
-        faLink.rel = 'stylesheet';
-        faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
-        document.head.appendChild(faLink);
+        // Add Font Awesome
+        const faScript = document.createElement('script');
+        faScript.src = 'https://kit.fontawesome.com/a076d05399.js';
+        faScript.crossOrigin = 'anonymous';
+        document.head.appendChild(faScript);
     </script>
 </body>
 </html>
