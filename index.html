@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Notes App</title>
+    <title>AI-Powered Voice Notes</title>
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
 
         body {
@@ -19,172 +30,453 @@
         }
 
         .app-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            opacity: 0.9;
-        }
-
-        .main-content {
             display: flex;
-            min-height: 700px;
+            flex-direction: column;
+            min-height: 95vh;
         }
 
-        /* Sidebar - Notebooks */
-        .sidebar {
-            width: 300px;
-            background: #f8fafc;
-            border-right: 1px solid #e2e8f0;
-            padding: 25px;
-            overflow-y: auto;
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .notebooks-header {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .notebooks-header h2 {
-            color: #1e293b;
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .app-title h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .app-title .icon {
+            font-size: 2.8rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .ai-status {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-status.online::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: flex;
+            flex: 1;
+            min-height: 700px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 350px;
+            background: var(--light);
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sidebar-header h2 {
+            color: var(--dark);
             font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .btn {
-            background: #4f46e5;
+        .create-notebook-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
+            border-radius: 12px;
+            font-size: 1rem;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .btn:hover {
-            background: #4338ca;
+        .create-notebook-btn:hover {
+            background: var(--primary-dark);
             transform: translateY(-2px);
         }
 
         .notebooks-list {
-            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
         }
 
         .notebook-item {
+            padding: 20px;
             background: white;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 12px;
+            border-radius: 16px;
+            margin-bottom: 15px;
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.3s;
+            position: relative;
+        }
+
+        .notebook-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .notebook-item.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .notebook-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .notebook-item:hover {
-            border-color: #4f46e5;
-            transform: translateX(5px);
-        }
-
-        .notebook-item.active {
-            border-color: #4f46e5;
-            background: #eef2ff;
-        }
-
-        .notebook-info h3 {
-            color: #1e293b;
-            margin-bottom: 5px;
-        }
-
-        .notebook-info p {
-            color: #64748b;
+        .notebook-stats {
+            display: flex;
+            gap: 15px;
             font-size: 0.9rem;
+            color: var(--gray);
         }
 
-        .notebook-count {
-            background: #4f46e5;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+        .notebook-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         /* Main Content Area */
         .content-area {
             flex: 1;
-            padding: 30px;
             display: flex;
             flex-direction: column;
+            background: white;
         }
 
         .content-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .content-header h2 {
-            color: #1e293b;
+        .current-notebook-info h2 {
             font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 8px;
         }
 
-        .notes-list {
+        .current-notebook-info p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .transcription-status {
+            background: var(--light);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transcribing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary);
+        }
+
+        .transcribing-indicator::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Live Transcription Section */
+        .transcription-section {
             flex: 1;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow: hidden;
+        }
+
+        .transcription-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .transcription-box {
+            flex: 1;
+            background: var(--light);
+            border-radius: 16px;
+            padding: 30px;
             overflow-y: auto;
-            margin-bottom: 30px;
+            border: 2px solid #e5e7eb;
+            transition: border-color 0.3s;
         }
 
-        .note-item {
-            background: #f8fafc;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 15px;
-            border-left: 5px solid #4f46e5;
+        .transcription-box.active {
+            border-color: var(--primary);
+        }
+
+        #liveTranscription {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--dark);
+            min-height: 200px;
+            white-space: pre-wrap;
+        }
+
+        .transcription-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .note-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        .record-btn {
+            background: var(--danger);
+            color: white;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .record-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .record-btn.recording {
+            background: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .ai-process-btn {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .ai-process-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .clear-btn {
+            background: var(--light);
+            color: var(--dark);
+            border: 2px solid #e5e7eb;
+        }
+
+        .clear-btn:hover {
+            background: #e5e7eb;
+        }
+
+        /* Notes Display */
+        .notes-display {
+            flex: 1;
+            padding: 30px 40px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow: hidden;
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notes-header h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notes-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .note-card.ai-enhanced {
+            border-left: 5px solid var(--secondary);
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .note-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
         }
 
         .note-date {
-            color: #64748b;
             font-size: 0.9rem;
-            margin-bottom: 10px;
+            color: var(--gray);
+            white-space: nowrap;
         }
 
         .note-content {
-            color: #1e293b;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            max-height: 150px;
+            color: var(--dark);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            max-height: 200px;
             overflow: hidden;
-            text-overflow: ellipsis;
+            position: relative;
+        }
+
+        .note-content.expanded {
+            max-height: none;
+        }
+
+        .read-more {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .note-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .note-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: var(--light);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--gray);
         }
 
         .note-actions {
@@ -194,117 +486,55 @@
             transition: opacity 0.3s;
         }
 
-        .note-item:hover .note-actions {
+        .note-card:hover .note-actions {
             opacity: 1;
         }
 
         .action-btn {
-            background: #e2e8f0;
-            border: none;
             padding: 8px 15px;
+            border: none;
             border-radius: 8px;
-            cursor: pointer;
             font-size: 0.9rem;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .action-btn:hover {
-            background: #cbd5e1;
+        .enhance-btn {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
         }
 
-        .action-btn.delete {
-            background: #fee2e2;
-            color: #dc2626;
+        .enhance-btn:hover {
+            background: var(--secondary);
+            color: white;
         }
 
-        .action-btn.delete:hover {
-            background: #fecaca;
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
 
-        /* Voice Recorder Section */
-        .voice-recorder {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px solid #bae6fd;
+        .delete-btn:hover {
+            background: var(--danger);
+            color: white;
         }
 
-        .recorder-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .recorder-header h3 {
-            color: #0369a1;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
+        /* Waveform Visualization */
         .waveform-container {
-            height: 150px;
-            background: white;
-            border-radius: 15px;
-            margin-bottom: 25px;
+            height: 100px;
+            background: var(--light);
+            border-radius: 12px;
+            margin: 20px 0;
             position: relative;
             overflow: hidden;
-            border: 2px solid #e2e8f0;
         }
 
-        #waveform {
+        #waveformCanvas {
             width: 100%;
             height: 100%;
         }
 
-        .recorder-controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .record-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .record-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
-        }
-
-        .record-btn.recording {
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        .save-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            padding: 15px 30px;
-        }
-
-        .status {
-            text-align: center;
-            margin-top: 15px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        /* Modal */
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -316,73 +546,124 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
             background: white;
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 24px;
             width: 90%;
             max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal h2 {
-            margin-bottom: 20px;
-            color: #1e293b;
+            margin-bottom: 25px;
+            color: var(--dark);
+            font-size: 1.8rem;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #475569;
-            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--dark);
+            font-weight: 600;
         }
 
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
             font-size: 1rem;
+            transition: border-color 0.3s;
         }
 
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: #4f46e5;
+            border-color: var(--primary);
         }
 
         .modal-buttons {
             display: flex;
             gap: 15px;
             justify-content: flex-end;
+            margin-top: 30px;
         }
 
-        /* Empty State */
+        /* AI Processing Overlay */
+        .ai-processing {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            flex-direction: column;
+            gap: 30px;
+            color: white;
+        }
+
+        .ai-processing.active {
+            display: flex;
+        }
+
+        .ai-spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-processing p {
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        /* Empty States */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #64748b;
+            color: var(--gray);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            opacity: 0.5;
         }
 
         .empty-state h3 {
             font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: #475569;
-        }
-
-        .empty-state p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
+            color: var(--dark);
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .main-content {
                 flex-direction: column;
             }
@@ -390,213 +671,421 @@
             .sidebar {
                 width: 100%;
                 border-right: none;
-                border-bottom: 1px solid #e2e8f0;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            
+            .notes-container {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
             }
             
             .content-header {
                 flex-direction: column;
-                gap: 15px;
                 text-align: center;
             }
             
-            .recorder-controls {
-                flex-wrap: wrap;
+            .transcription-controls {
+                justify-content: center;
+            }
+            
+            .control-btn {
+                flex: 1;
+                min-width: 150px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
-        <div class="header">
-            <h1>🎤 Voice Notes App</h1>
-            <p>Record, organize, and manage your voice notes with live waveform visualization</p>
-        </div>
-
-        <div class="main-content">
-            <!-- Sidebar with Notebooks -->
-            <div class="sidebar">
-                <div class="notebooks-header">
-                    <h2>📓 Notebooks</h2>
-                    <button class="btn" id="newNotebookBtn">+ New</button>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="app-title">
+                    <div class="icon">🤖</div>
+                    <div>
+                        <h1>AI Voice Notes</h1>
+                        <p>Live transcription with AI-powered note enhancement</p>
+                    </div>
                 </div>
-                <ul class="notebooks-list" id="notebooksList">
-                    <!-- Notebooks will be loaded here -->
-                </ul>
+                <div class="ai-status online">
+                    AI Assistant Ready
+                </div>
             </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar - Notebooks -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2><i class="fas fa-book"></i> Notebooks</h2>
+                    <button class="create-notebook-btn" id="createNotebookBtn">
+                        <i class="fas fa-plus"></i> New Notebook
+                    </button>
+                </div>
+                <div class="notebooks-list" id="notebooksList">
+                    <!-- Notebooks will be loaded here -->
+                </div>
+            </aside>
 
             <!-- Main Content Area -->
-            <div class="content-area">
+            <main class="content-area">
+                <!-- Current Notebook Header -->
                 <div class="content-header">
-                    <h2 id="currentNotebookTitle">Select a Notebook</h2>
-                    <div class="status" id="recordingStatus">Ready to record</div>
-                </div>
-
-                <div class="notes-list" id="notesList">
-                    <!-- Notes will be loaded here -->
-                    <div class="empty-state">
-                        <h3>No notes yet</h3>
-                        <p>Select a notebook and start recording to add your first voice note!</p>
+                    <div class="current-notebook-info">
+                        <h2 id="currentNotebookTitle">Select a Notebook</h2>
+                        <p id="currentNotebookDescription">Choose or create a notebook to start recording notes</p>
+                    </div>
+                    <div class="transcription-status" id="transcriptionStatus">
+                        <span id="statusText">Ready to transcribe</span>
+                        <span class="transcribing-indicator" id="transcribingIndicator" style="display: none;"></span>
                     </div>
                 </div>
 
-                <!-- Voice Recorder -->
-                <div class="voice-recorder">
-                    <div class="recorder-header">
-                        <h3>🎤 Voice Recorder</h3>
-                        <p>Click record to start capturing your voice note</p>
+                <!-- Live Transcription Section -->
+                <section class="transcription-section">
+                    <div class="transcription-container">
+                        <div class="transcription-box" id="transcriptionBox">
+                            <div id="liveTranscription">
+                                Start speaking to see live transcription here...
+                            </div>
+                        </div>
+                        
+                        <!-- Waveform Visualization -->
+                        <div class="waveform-container">
+                            <canvas id="waveformCanvas"></canvas>
+                        </div>
+                        
+                        <div class="transcription-controls">
+                            <button class="control-btn record-btn" id="recordBtn">
+                                <i class="fas fa-microphone"></i> Start Transcription
+                            </button>
+                            <button class="control-btn ai-process-btn" id="aiProcessBtn" disabled>
+                                <i class="fas fa-robot"></i> Enhance with AI
+                            </button>
+                            <button class="control-btn clear-btn" id="clearBtn">
+                                <i class="fas fa-eraser"></i> Clear
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="waveform-container">
-                        <canvas id="waveform"></canvas>
-                    </div>
+                </section>
 
-                    <div class="recorder-controls">
-                        <button class="btn record-btn" id="recordBtn">
-                            🎤
-                        </button>
-                        <button class="btn save-btn" id="saveBtn" disabled>
-                            💾 Save Note
-                        </button>
+                <!-- Notes Display -->
+                <section class="notes-display">
+                    <div class="notes-header">
+                        <h3><i class="fas fa-sticky-note"></i> AI-Enhanced Notes</h3>
+                        <div class="notes-count" id="notesCount">0 notes</div>
                     </div>
-                </div>
-            </div>
+                    <div class="notes-container" id="notesContainer">
+                        <!-- Notes will be loaded here -->
+                        <div class="empty-state">
+                            <div class="icon">📝</div>
+                            <h3>No notes yet</h3>
+                            <p>Start transcribing and enhance with AI to see detailed notes here</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
-    <!-- Modal for creating new notebook -->
+    <!-- Modals -->
     <div class="modal" id="notebookModal">
         <div class="modal-content">
             <h2>Create New Notebook</h2>
             <div class="form-group">
                 <label for="notebookName">Notebook Name</label>
-                <input type="text" id="notebookName" placeholder="Enter notebook name">
+                <input type="text" id="notebookName" placeholder="e.g., Meeting Notes, Lecture Notes, Ideas">
+            </div>
+            <div class="form-group">
+                <label for="notebookCategory">Category</label>
+                <select id="notebookCategory">
+                    <option value="general">General</option>
+                    <option value="work">Work</option>
+                    <option value="education">Education</option>
+                    <option value="personal">Personal</option>
+                    <option value="ideas">Ideas</option>
+                    <option value="meetings">Meetings</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="notebookDescription">Description (Optional)</label>
-                <textarea id="notebookDescription" rows="3" placeholder="Add a description"></textarea>
+                <textarea id="notebookDescription" rows="3" placeholder="What will you use this notebook for?"></textarea>
             </div>
             <div class="modal-buttons">
-                <button class="btn" id="cancelBtn">Cancel</button>
-                <button class="btn" id="createNotebookBtn">Create</button>
+                <button class="control-btn clear-btn" id="cancelNotebookBtn">Cancel</button>
+                <button class="control-btn ai-process-btn" id="confirmNotebookBtn">Create Notebook</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal for note transcription -->
-    <div class="modal" id="transcriptionModal">
+    <div class="modal" id="saveNoteModal">
         <div class="modal-content">
-            <h2>Review & Save Note</h2>
+            <h2>Save Enhanced Note</h2>
             <div class="form-group">
-                <label for="noteTitle">Note Title</label>
-                <input type="text" id="noteTitle" placeholder="Enter note title">
+                <label for="enhancedNoteTitle">Note Title</label>
+                <input type="text" id="enhancedNoteTitle" placeholder="Enter a descriptive title">
             </div>
             <div class="form-group">
-                <label for="noteTranscription">Transcription (Edit if needed)</label>
-                <textarea id="noteTranscription" rows="6" placeholder="Transcription will appear here..."></textarea>
+                <label for="enhancedNoteContent">Enhanced Content</label>
+                <textarea id="enhancedNoteContent" rows="8" placeholder="AI-enhanced content will appear here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Key Topics Identified</label>
+                <div class="note-tags" id="aiTags">
+                    <!-- AI-generated tags will appear here -->
+                </div>
             </div>
             <div class="modal-buttons">
-                <button class="btn" id="cancelTranscriptionBtn">Cancel</button>
-                <button class="btn" id="saveNoteBtn">Save Note</button>
+                <button class="control-btn clear-btn" id="cancelSaveBtn">Cancel</button>
+                <button class="control-btn record-btn" id="confirmSaveBtn">Save to Notebook</button>
             </div>
         </div>
+    </div>
+
+    <!-- AI Processing Overlay -->
+    <div class="ai-processing" id="aiProcessing">
+        <div class="ai-spinner"></div>
+        <h2>AI is Enhancing Your Notes</h2>
+        <p id="aiProcessMessage">Our AI assistant is analyzing your transcription, summarizing key points, and generating detailed notes...</p>
     </div>
 
     <script>
         // App State
         const state = {
             currentNotebook: null,
-            notebooks: JSON.parse(localStorage.getItem('voiceNotesNotebooks')) || [],
-            isRecording: false,
-            mediaRecorder: null,
-            audioChunks: [],
+            notebooks: JSON.parse(localStorage.getItem('aiVoiceNotes')) || [],
+            isTranscribing: false,
+            recognition: null,
+            finalTranscript: '',
+            interimTranscript: '',
             audioContext: null,
             analyser: null,
             dataArray: null,
             animationId: null,
-            recordedAudio: null
+            mediaStream: null,
+            currentTranscription: '',
+            enhancedNotes: []
         };
 
         // DOM Elements
-        const notebooksList = document.getElementById('notebooksList');
-        const notesList = document.getElementById('notesList');
-        const currentNotebookTitle = document.getElementById('currentNotebookTitle');
-        const recordBtn = document.getElementById('recordBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const waveformCanvas = document.getElementById('waveform');
-        const recordingStatus = document.getElementById('recordingStatus');
-        const notebookModal = document.getElementById('notebookModal');
-        const transcriptionModal = document.getElementById('transcriptionModal');
+        const elements = {
+            notebooksList: document.getElementById('notebooksList'),
+            notesContainer: document.getElementById('notesContainer'),
+            currentNotebookTitle: document.getElementById('currentNotebookTitle'),
+            currentNotebookDescription: document.getElementById('currentNotebookDescription'),
+            recordBtn: document.getElementById('recordBtn'),
+            aiProcessBtn: document.getElementById('aiProcessBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            liveTranscription: document.getElementById('liveTranscription'),
+            transcriptionBox: document.getElementById('transcriptionBox'),
+            transcriptionStatus: document.getElementById('transcriptionStatus'),
+            statusText: document.getElementById('statusText'),
+            transcribingIndicator: document.getElementById('transcribingIndicator'),
+            waveformCanvas: document.getElementById('waveformCanvas'),
+            notebookModal: document.getElementById('notebookModal'),
+            saveNoteModal: document.getElementById('saveNoteModal'),
+            aiProcessing: document.getElementById('aiProcessing'),
+            aiProcessMessage: document.getElementById('aiProcessMessage'),
+            notesCount: document.getElementById('notesCount')
+        };
 
         // Initialize App
         function initApp() {
+            initSpeechRecognition();
             renderNotebooks();
             setupEventListeners();
             setupAudioVisualizer();
+            
+            // Initialize with sample notebooks if empty
+            if (state.notebooks.length === 0) {
+                createSampleData();
+            }
+        }
+
+        // Create sample data for demo
+        function createSampleData() {
+            const sampleNotebooks = [
+                {
+                    id: 1,
+                    name: 'Meeting Notes',
+                    category: 'meetings',
+                    description: 'Notes from team meetings and discussions',
+                    created: new Date().toISOString(),
+                    notes: []
+                },
+                {
+                    id: 2,
+                    name: 'Lecture Notes',
+                    category: 'education',
+                    description: 'University lectures and study materials',
+                    created: new Date().toISOString(),
+                    notes: []
+                },
+                {
+                    id: 3,
+                    name: 'Creative Ideas',
+                    category: 'ideas',
+                    description: 'Brainstorming and creative thoughts',
+                    created: new Date().toISOString(),
+                    notes: []
+                }
+            ];
+            
+            state.notebooks = sampleNotebooks;
+            saveToLocalStorage();
+            renderNotebooks();
+        }
+
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+
+            state.recognition = new SpeechRecognition();
+            state.recognition.continuous = true;
+            state.recognition.interimResults = true;
+            state.recognition.lang = 'en-US';
+            state.recognition.maxAlternatives = 1;
+
+            state.recognition.onstart = () => {
+                state.isTranscribing = true;
+                updateUIForTranscribing(true);
+            };
+
+            state.recognition.onresult = (event) => {
+                state.interimTranscript = '';
+                state.finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    
+                    if (event.results[i].isFinal) {
+                        state.finalTranscript += transcript + ' ';
+                        state.currentTranscription += transcript + ' ';
+                    } else {
+                        state.interimTranscript += transcript;
+                    }
+                }
+
+                updateTranscriptionDisplay();
+            };
+
+            state.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    elements.statusText.textContent = 'No speech detected';
+                } else if (event.error === 'audio-capture') {
+                    elements.statusText.textContent = 'No microphone found';
+                } else if (event.error === 'not-allowed') {
+                    elements.statusText.textContent = 'Microphone access denied';
+                }
+            };
+
+            state.recognition.onend = () => {
+                state.isTranscribing = false;
+                updateUIForTranscribing(false);
+                if (state.finalTranscript) {
+                    elements.aiProcessBtn.disabled = false;
+                }
+            };
         }
 
         // Setup Event Listeners
         function setupEventListeners() {
-            // Notebook buttons
-            document.getElementById('newNotebookBtn').addEventListener('click', () => {
+            // Notebook modal
+            document.getElementById('createNotebookBtn').addEventListener('click', () => {
                 document.getElementById('notebookName').value = '';
                 document.getElementById('notebookDescription').value = '';
-                notebookModal.style.display = 'flex';
+                elements.notebookModal.style.display = 'flex';
             });
 
-            document.getElementById('cancelBtn').addEventListener('click', () => {
-                notebookModal.style.display = 'none';
+            document.getElementById('cancelNotebookBtn').addEventListener('click', () => {
+                elements.notebookModal.style.display = 'none';
             });
 
-            document.getElementById('createNotebookBtn').addEventListener('click', createNotebook);
+            document.getElementById('confirmNotebookBtn').addEventListener('click', createNotebook);
 
-            // Transcription modal buttons
-            document.getElementById('cancelTranscriptionBtn').addEventListener('click', () => {
-                transcriptionModal.style.display = 'none';
+            // Save note modal
+            document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+                elements.saveNoteModal.style.display = 'none';
             });
 
-            document.getElementById('saveNoteBtn').addEventListener('click', saveNote);
+            document.getElementById('confirmSaveBtn').addEventListener('click', saveEnhancedNote);
 
-            // Recording buttons
-            recordBtn.addEventListener('click', toggleRecording);
-            saveBtn.addEventListener('click', showTranscriptionModal);
+            // Control buttons
+            elements.recordBtn.addEventListener('click', toggleTranscription);
+            elements.aiProcessBtn.addEventListener('click', enhanceWithAI);
+            elements.clearBtn.addEventListener('click', clearTranscription);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === ' ') {
+                    e.preventDefault();
+                    toggleTranscription();
+                }
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!elements.aiProcessBtn.disabled) enhanceWithAI();
+                }
+                if (e.key === 'Escape') {
+                    if (state.isTranscribing) toggleTranscription();
+                }
+            });
         }
 
         // Notebook Functions
         function renderNotebooks() {
-            notebooksList.innerHTML = '';
+            elements.notebooksList.innerHTML = '';
             
-            if (state.notebooks.length === 0) {
-                notebooksList.innerHTML = `
-                    <div class="empty-state">
-                        <h3>No notebooks yet</h3>
-                        <p>Create your first notebook to get started!</p>
-                    </div>
-                `;
-                return;
-            }
-
             state.notebooks.forEach((notebook, index) => {
-                const notebookItem = document.createElement('li');
+                const notebookItem = document.createElement('div');
                 notebookItem.className = 'notebook-item';
                 if (state.currentNotebook === index) {
                     notebookItem.classList.add('active');
                 }
                 
                 notebookItem.innerHTML = `
-                    <div class="notebook-info">
-                        <h3>${notebook.name}</h3>
-                        <p>${notebook.description || 'No description'}</p>
+                    <div class="notebook-title">
+                        <span>${notebook.name}</span>
+                        <span class="note-count">${notebook.notes.length} notes</span>
                     </div>
-                    <span class="notebook-count">${notebook.notes.length}</span>
+                    <div class="notebook-stats">
+                        <span class="notebook-stat">
+                            <i class="fas fa-folder"></i> ${notebook.category}
+                        </span>
+                        <span class="notebook-stat">
+                            <i class="far fa-calendar"></i> ${formatDate(notebook.created)}
+                        </span>
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">${notebook.description}</p>
                 `;
                 
                 notebookItem.addEventListener('click', () => selectNotebook(index));
-                notebooksList.appendChild(notebookItem);
+                elements.notebooksList.appendChild(notebookItem);
             });
+            
+            updateNotesCount();
         }
 
         function createNotebook() {
             const name = document.getElementById('notebookName').value.trim();
+            const category = document.getElementById('notebookCategory').value;
             const description = document.getElementById('notebookDescription').value.trim();
 
             if (!name) {
@@ -607,6 +1096,7 @@
             const newNotebook = {
                 id: Date.now(),
                 name,
+                category,
                 description,
                 created: new Date().toISOString(),
                 notes: []
@@ -615,7 +1105,7 @@
             state.notebooks.push(newNotebook);
             saveToLocalStorage();
             renderNotebooks();
-            notebookModal.style.display = 'none';
+            elements.notebookModal.style.display = 'none';
             
             // Select the new notebook
             selectNotebook(state.notebooks.length - 1);
@@ -627,17 +1117,308 @@
             renderNotes();
             
             const notebook = state.notebooks[index];
-            currentNotebookTitle.textContent = `📒 ${notebook.name}`;
-            recordingStatus.textContent = `Ready to record in "${notebook.name}"`;
+            elements.currentNotebookTitle.textContent = notebook.name;
+            elements.currentNotebookDescription.textContent = notebook.description;
+            
+            // Update status
+            elements.statusText.textContent = `Ready to transcribe in "${notebook.name}"`;
+        }
+
+        // Transcription Functions
+        function toggleTranscription() {
+            if (!state.isTranscribing) {
+                startTranscription();
+            } else {
+                stopTranscription();
+            }
+        }
+
+        function startTranscription() {
+            if (!state.recognition) {
+                alert('Speech recognition is not available. Please use a supported browser.');
+                return;
+            }
+
+            if (state.currentNotebook === null) {
+                alert('Please select a notebook first');
+                return;
+            }
+
+            state.finalTranscript = '';
+            state.interimTranscript = '';
+            state.currentTranscription = '';
+            updateTranscriptionDisplay();
+            
+            // Request microphone access for visualization
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    state.mediaStream = stream;
+                    setupAudioVisualizer(stream);
+                    state.recognition.start();
+                    elements.transcriptionBox.classList.add('active');
+                })
+                .catch(err => {
+                    console.error('Error accessing microphone:', err);
+                    state.recognition.start();
+                    elements.transcriptionBox.classList.add('active');
+                });
+        }
+
+        function stopTranscription() {
+            if (state.recognition && state.isTranscribing) {
+                state.recognition.stop();
+            }
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(track => track.stop());
+                state.mediaStream = null;
+            }
+            elements.transcriptionBox.classList.remove('active');
+            cancelAnimationFrame(state.animationId);
+            drawSilentWaveform();
+        }
+
+        function updateUIForTranscribing(isTranscribing) {
+            if (isTranscribing) {
+                elements.recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Transcription';
+                elements.recordBtn.classList.add('recording');
+                elements.statusText.textContent = 'Transcribing...';
+                elements.transcribingIndicator.style.display = 'inline-block';
+                elements.aiProcessBtn.disabled = true;
+            } else {
+                elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Transcription';
+                elements.recordBtn.classList.remove('recording');
+                elements.statusText.textContent = 'Transcription complete';
+                elements.transcribingIndicator.style.display = 'none';
+                
+                if (state.currentTranscription.trim().length > 50) {
+                    elements.aiProcessBtn.disabled = false;
+                }
+            }
+        }
+
+        function updateTranscriptionDisplay() {
+            const displayText = state.currentTranscription + state.interimTranscript;
+            elements.liveTranscription.textContent = displayText || 'Start speaking to see live transcription here...';
+            
+            // Auto-scroll to bottom
+            elements.liveTranscription.scrollTop = elements.liveTranscription.scrollHeight;
+        }
+
+        function clearTranscription() {
+            state.currentTranscription = '';
+            state.finalTranscript = '';
+            state.interimTranscript = '';
+            updateTranscriptionDisplay();
+            elements.aiProcessBtn.disabled = true;
+            elements.statusText.textContent = 'Ready to transcribe';
+        }
+
+        // AI Enhancement Functions
+        async function enhanceWithAI() {
+            if (!state.currentTranscription.trim()) {
+                alert('No transcription to enhance');
+                return;
+            }
+
+            if (state.currentNotebook === null) {
+                alert('Please select a notebook first');
+                return;
+            }
+
+            // Show AI processing overlay
+            elements.aiProcessing.classList.add('active');
+            elements.aiProcessMessage.textContent = 'Analyzing your transcription, extracting key points, and generating detailed notes...';
+
+            try {
+                // Simulate AI processing (in a real app, this would call an AI API)
+                await simulateAIProcessing();
+                
+                // Generate enhanced content
+                const enhancedContent = generateEnhancedContent(state.currentTranscription);
+                
+                // Show save modal with AI-enhanced content
+                document.getElementById('enhancedNoteTitle').value = `Enhanced Note - ${new Date().toLocaleDateString()}`;
+                document.getElementById('enhancedNoteContent').value = enhancedContent.content;
+                
+                // Generate and display AI tags
+                const tagsContainer = document.getElementById('aiTags');
+                tagsContainer.innerHTML = '';
+                enhancedContent.tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'tag';
+                    tagElement.textContent = tag;
+                    tagsContainer.appendChild(tagElement);
+                });
+                
+                elements.saveNoteModal.style.display = 'flex';
+                
+            } catch (error) {
+                console.error('AI processing error:', error);
+                alert('Error processing with AI. Please try again.');
+            } finally {
+                elements.aiProcessing.classList.remove('active');
+            }
+        }
+
+        function simulateAIProcessing() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                }, 2000);
+            });
+        }
+
+        function generateEnhancedContent(transcription) {
+            // This simulates what an AI like GPT-4 would generate
+            // In a real app, you would call an AI API here
+            
+            // Extract keywords from transcription
+            const words = transcription.toLowerCase().split(/\s+/);
+            const wordFrequency = {};
+            words.forEach(word => {
+                if (word.length > 4) { // Filter out short words
+                    wordFrequency[word] = (wordFrequency[word] || 0) + 1;
+                }
+            });
+            
+            // Get top keywords
+            const keywords = Object.entries(wordFrequency)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([word]) => word);
+            
+            // Generate enhanced content
+            const enhancedContent = `
+SUMMARY:
+${generateSummary(transcription)}
+
+KEY POINTS:
+${generateKeyPoints(transcription)}
+
+ACTION ITEMS:
+${generateActionItems(transcription)}
+
+DETAILED NOTES:
+${generateDetailedNotes(transcription)}
+
+ADDITIONAL INSIGHTS:
+${generateInsights(transcription)}
+            `.trim();
+            
+            return {
+                content: enhancedContent,
+                tags: keywords
+            };
+        }
+
+        function generateSummary(text) {
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            return sentences.slice(0, 3).join('. ') + '.';
+        }
+
+        function generateKeyPoints(text) {
+            const keyPoints = [
+                "• " + extractMainTopic(text),
+                "• Important discussion about " + extractKeywords(text, 2).join(' and '),
+                "• Key decisions made during the conversation",
+                "• Follow-up items identified"
+            ];
+            return keyPoints.join('\n');
+        }
+
+        function generateActionItems(text) {
+            const actionItems = [
+                "• Review the main points discussed",
+                "• Schedule follow-up if needed",
+                "• Share notes with relevant stakeholders",
+                "• Implement decisions made"
+            ];
+            return actionItems.join('\n');
+        }
+
+        function generateDetailedNotes(text) {
+            return text.split(/[.!?]+/)
+                .filter(s => s.trim().length > 20)
+                .slice(0, 8)
+                .map(sentence => `• ${sentence.trim()}.`)
+                .join('\n');
+        }
+
+        function generateInsights(text) {
+            const insights = [
+                "The conversation focused primarily on " + extractMainTopic(text),
+                "Multiple perspectives were discussed regarding the main topic",
+                "Consensus was reached on several key points",
+                "Further research or discussion may be needed on some aspects"
+            ];
+            return insights.join('\n');
+        }
+
+        function extractMainTopic(text) {
+            const commonWords = ['the', 'and', 'that', 'for', 'with', 'this', 'have', 'from', 'about', 'what'];
+            const words = text.toLowerCase().split(/\s+/)
+                .filter(word => word.length > 3 && !commonWords.includes(word));
+            
+            return words[0] || 'the discussion';
+        }
+
+        function extractKeywords(text, count) {
+            const commonWords = ['the', 'and', 'that', 'for', 'with', 'this', 'have', 'from', 'about', 'what'];
+            const words = text.toLowerCase().split(/\s+/)
+                .filter(word => word.length > 3 && !commonWords.includes(word));
+            
+            return [...new Set(words)].slice(0, count);
         }
 
         // Note Functions
+        function saveEnhancedNote() {
+            const title = document.getElementById('enhancedNoteTitle').value.trim();
+            const content = document.getElementById('enhancedNoteContent').value.trim();
+
+            if (!title || !content) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const tags = Array.from(document.querySelectorAll('#aiTags .tag'))
+                .map(tag => tag.textContent);
+
+            const newNote = {
+                id: Date.now(),
+                title,
+                content,
+                originalTranscription: state.currentTranscription,
+                tags,
+                created: new Date().toISOString(),
+                isAIEnhanced: true,
+                notebookId: state.notebooks[state.currentNotebook].id
+            };
+
+            state.notebooks[state.currentNotebook].notes.unshift(newNote);
+            saveToLocalStorage();
+            renderNotes();
+            renderNotebooks();
+            
+            elements.saveNoteModal.style.display = 'none';
+            clearTranscription();
+            
+            // Show success message
+            elements.statusText.textContent = 'Note saved successfully!';
+            setTimeout(() => {
+                if (state.currentNotebook !== null) {
+                    const notebook = state.notebooks[state.currentNotebook];
+                    elements.statusText.textContent = `Ready to transcribe in "${notebook.name}"`;
+                }
+            }, 3000);
+        }
+
         function renderNotes() {
             if (state.currentNotebook === null) {
-                notesList.innerHTML = `
+                elements.notesContainer.innerHTML = `
                     <div class="empty-state">
+                        <div class="icon">📚</div>
                         <h3>Select a Notebook</h3>
-                        <p>Please select a notebook to view and add notes</p>
+                        <p>Choose a notebook to view its notes</p>
                     </div>
                 `;
                 return;
@@ -646,41 +1427,52 @@
             const notebook = state.notebooks[state.currentNotebook];
             
             if (notebook.notes.length === 0) {
-                notesList.innerHTML = `
+                elements.notesContainer.innerHTML = `
                     <div class="empty-state">
+                        <div class="icon">📝</div>
                         <h3>No notes yet</h3>
-                        <p>Start recording to add your first voice note!</p>
+                        <p>Start transcribing and enhance with AI to create notes</p>
                     </div>
                 `;
                 return;
             }
 
-            notesList.innerHTML = '';
+            elements.notesContainer.innerHTML = '';
             notebook.notes.forEach((note, index) => {
-                const noteItem = document.createElement('div');
-                noteItem.className = 'note-item';
-                noteItem.innerHTML = `
-                    <div class="note-date">${formatDate(note.created)}</div>
-                    <h3>${note.title}</h3>
-                    <div class="note-content">${note.transcription}</div>
-                    <audio src="${note.audioUrl}" controls style="width: 100%; margin: 10px 0;"></audio>
-                    <div class="note-actions">
-                        <button class="action-btn delete" onclick="deleteNote(${index})">Delete</button>
+                const noteCard = document.createElement('div');
+                noteCard.className = `note-card ${note.isAIEnhanced ? 'ai-enhanced' : ''}`;
+                
+                // Truncate content for preview
+                const previewContent = note.content.length > 300 ? 
+                    note.content.substring(0, 300) + '...' : note.content;
+                
+                noteCard.innerHTML = `
+                    <div class="note-header">
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-date">${formatDate(note.created)}</div>
+                    </div>
+                    <div class="note-content">
+                        ${previewContent.replace(/\n/g, '<br>')}
+                        ${note.content.length > 300 ? 
+                            `<span class="read-more" onclick="toggleNoteExpand(this)">Read more</span>` : ''}
+                    </div>
+                    <div class="note-footer">
+                        <div class="note-tags">
+                            ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            ${note.isAIEnhanced ? '<span class="tag" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary);"><i class="fas fa-robot"></i> AI Enhanced</span>' : ''}
+                        </div>
+                        <div class="note-actions">
+                            <button class="action-btn delete-btn" onclick="deleteNote(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
-                notesList.appendChild(noteItem);
+                
+                elements.notesContainer.appendChild(noteCard);
             });
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            
+            updateNotesCount();
         }
 
         function deleteNote(noteIndex) {
@@ -692,70 +1484,16 @@
             }
         }
 
-        // Audio Recording Functions
-        async function toggleRecording() {
-            if (!state.isRecording) {
-                startRecording();
+        function toggleNoteExpand(element) {
+            const noteContent = element.parentElement;
+            const isExpanded = noteContent.classList.contains('expanded');
+            
+            if (isExpanded) {
+                noteContent.classList.remove('expanded');
+                element.textContent = 'Read more';
             } else {
-                stopRecording();
-            }
-        }
-
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        sampleRate: 44100
-                    }
-                });
-                
-                state.mediaRecorder = new MediaRecorder(stream);
-                state.audioChunks = [];
-                
-                state.mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        state.audioChunks.push(event.data);
-                    }
-                };
-                
-                state.mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
-                    state.recordedAudio = audioBlob;
-                    saveBtn.disabled = false;
-                    recordingStatus.textContent = 'Recording stopped. Ready to save.';
-                    
-                    // Stop visualization
-                    cancelAnimationFrame(state.animationId);
-                    drawSilentWaveform();
-                };
-                
-                // Setup audio visualization
-                setupAudioVisualizer(stream);
-                
-                state.mediaRecorder.start();
-                state.isRecording = true;
-                recordBtn.classList.add('recording');
-                recordBtn.innerHTML = '⏸️';
-                saveBtn.disabled = true;
-                recordingStatus.textContent = 'Recording... Click stop when done';
-                
-            } catch (error) {
-                console.error('Error accessing microphone:', error);
-                alert('Could not access microphone. Please check permissions.');
-            }
-        }
-
-        function stopRecording() {
-            if (state.mediaRecorder && state.isRecording) {
-                state.mediaRecorder.stop();
-                state.isRecording = false;
-                recordBtn.classList.remove('recording');
-                recordBtn.innerHTML = '🎤';
-                
-                // Stop all tracks
-                state.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                noteContent.classList.add('expanded');
+                element.textContent = 'Read less';
             }
         }
 
@@ -779,20 +1517,29 @@
         }
 
         function drawWaveform() {
-            if (!state.analyser || !state.dataArray) return;
+            if (!state.analyser || !state.dataArray) {
+                requestAnimationFrame(drawWaveform);
+                return;
+            }
 
-            const canvas = waveformCanvas;
+            const canvas = elements.waveformCanvas;
             const ctx = canvas.getContext('2d');
             const width = canvas.width = canvas.offsetWidth;
             const height = canvas.height = canvas.offsetHeight;
 
             state.analyser.getByteTimeDomainData(state.dataArray);
 
-            ctx.fillStyle = 'rgb(248, 250, 252)';
+            // Clear canvas with gradient
+            const gradient = ctx.createLinearGradient(0, 0, width, 0);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.1)');
+            gradient.addColorStop(1, 'rgba(99, 102, 241, 0.05)');
+            
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
+            // Draw waveform
             ctx.lineWidth = 3;
-            ctx.strokeStyle = 'rgb(79, 70, 229)';
+            ctx.strokeStyle = 'rgb(99, 102, 241)';
             ctx.beginPath();
 
             const sliceWidth = width * 1.0 / state.dataArray.length;
@@ -814,12 +1561,12 @@
             ctx.lineTo(width, height / 2);
             ctx.stroke();
 
-            // Add gradient fill
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, 'rgba(79, 70, 229, 0.3)');
-            gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+            // Add gradient fill under waveform
+            const fillGradient = ctx.createLinearGradient(0, 0, 0, height);
+            fillGradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+            fillGradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
             
-            ctx.fillStyle = gradient;
+            ctx.fillStyle = fillGradient;
             ctx.lineTo(width, height);
             ctx.lineTo(0, height);
             ctx.fill();
@@ -828,16 +1575,21 @@
         }
 
         function drawSilentWaveform() {
-            const canvas = waveformCanvas;
+            const canvas = elements.waveformCanvas;
             const ctx = canvas.getContext('2d');
             const width = canvas.width = canvas.offsetWidth;
             const height = canvas.height = canvas.offsetHeight;
 
-            ctx.fillStyle = 'rgb(248, 250, 252)';
+            // Clear with subtle gradient
+            const gradient = ctx.createLinearGradient(0, 0, width, 0);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.05)');
+            gradient.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
+            
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
             // Draw a subtle baseline
-            ctx.strokeStyle = 'rgba(79, 70, 229, 0.1)';
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.1)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(0, height / 2);
@@ -845,88 +1597,54 @@
             ctx.stroke();
         }
 
-        // Save Note Functions
-        function showTranscriptionModal() {
-            if (!state.recordedAudio) {
-                alert('No recording to save!');
-                return;
-            }
-
-            // In a real app, you would send the audio to a speech-to-text API
-            // For this demo, we'll simulate transcription
-            const simulatedTranscription = "This is a simulated transcription. In a real application, this would be generated by a speech-to-text service like Google Cloud Speech-to-Text or AWS Transcribe.";
-            
-            document.getElementById('noteTitle').value = `Voice Note ${new Date().toLocaleDateString()}`;
-            document.getElementById('noteTranscription').value = simulatedTranscription;
-            transcriptionModal.style.display = 'flex';
-        }
-
-        function saveNote() {
-            const title = document.getElementById('noteTitle').value.trim();
-            const transcription = document.getElementById('noteTranscription').value.trim();
-
-            if (!title || !transcription) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            if (state.currentNotebook === null) {
-                alert('Please select a notebook first');
-                return;
-            }
-
-            // Convert audio blob to data URL
-            const reader = new FileReader();
-            reader.readAsDataURL(state.recordedAudio);
-            reader.onloadend = () => {
-                const audioUrl = reader.result;
-                
-                const newNote = {
-                    id: Date.now(),
-                    title,
-                    transcription,
-                    audioUrl,
-                    created: new Date().toISOString(),
-                    duration: Math.floor(state.audioChunks.length / 44100) // Simulated duration
-                };
-
-                state.notebooks[state.currentNotebook].notes.unshift(newNote);
-                saveToLocalStorage();
-                renderNotes();
-                renderNotebooks();
-                
-                transcriptionModal.style.display = 'none';
-                state.recordedAudio = null;
-                saveBtn.disabled = true;
-                recordingStatus.textContent = 'Note saved successfully!';
-                
-                // Reset after 3 seconds
-                setTimeout(() => {
-                    if (state.currentNotebook !== null) {
-                        const notebook = state.notebooks[state.currentNotebook];
-                        recordingStatus.textContent = `Ready to record in "${notebook.name}"`;
-                    }
-                }, 3000);
-            };
-        }
-
         // Utility Functions
-        function saveToLocalStorage() {
-            localStorage.setItem('voiceNotesNotebooks', JSON.stringify(state.notebooks));
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return 'Today';
+            } else if (diffDays === 1) {
+                return 'Yesterday';
+            } else if (diffDays < 7) {
+                return `${diffDays} days ago`;
+            } else {
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
         }
 
-        // Initialize the app when page loads
+        function updateNotesCount() {
+            if (state.currentNotebook !== null) {
+                const noteCount = state.notebooks[state.currentNotebook].notes.length;
+                elements.notesCount.textContent = `${noteCount} ${noteCount === 1 ? 'note' : 'notes'}`;
+            } else {
+                elements.notesCount.textContent = '0 notes';
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('aiVoiceNotes', JSON.stringify(state.notebooks));
+        }
+
+        // Initialize the app
         window.addEventListener('DOMContentLoaded', initApp);
         window.addEventListener('resize', () => {
-            if (!state.isRecording) {
+            if (!state.isTranscribing) {
                 drawSilentWaveform();
             }
         });
 
-        // Make deleteNote available globally
+        // Make functions globally available
+        window.toggleNoteExpand = toggleNoteExpand;
         window.deleteNote = deleteNote;
 
-        // Draw initial silent waveform
+        // Draw initial waveform
         setTimeout(() => {
             drawSilentWaveform();
         }, 100);
