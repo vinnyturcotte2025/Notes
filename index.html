@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Voice Notes | Offline</title>
+    <title>AI Voice Notes Pro | 100% Offline</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -14,6 +14,7 @@
             --gray: #6b7280;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --purple: #8b5cf6;
         }
 
         * {
@@ -31,7 +32,7 @@
         }
 
         .app-container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -74,6 +75,32 @@
         .app-title p {
             opacity: 0.9;
             font-size: 0.95rem;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .ai-status {
@@ -306,6 +333,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .section-header h3 {
@@ -314,6 +343,37 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-container input {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            min-width: 200px;
+            transition: all 0.3s;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .transcription-box {
@@ -380,27 +440,27 @@
         }
 
         .record-btn {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
             color: white;
         }
 
         .record-btn:hover {
-            background: #dc2626;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             transform: translateY(-2px);
         }
 
         .record-btn.recording {
-            background: var(--warning);
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
             animation: pulse 2s infinite;
         }
 
         .ai-process-btn {
-            background: var(--secondary);
+            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
             color: white;
         }
 
         .ai-process-btn:hover {
-            background: #059669;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             transform: translateY(-2px);
         }
 
@@ -412,6 +472,21 @@
 
         .clear-btn:hover {
             background: #e5e7eb;
+        }
+
+        .voice-command-btn {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: white;
+        }
+
+        .stats-btn {
+            background: linear-gradient(135deg, var(--purple) 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .help-btn {
+            background: linear-gradient(135deg, var(--gray) 0%, #4b5563 100%);
+            color: white;
         }
 
         /* Notes Section */
@@ -428,6 +503,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .notes-header h3 {
@@ -508,6 +585,47 @@
             max-height: none;
         }
 
+        .note-content.markdown h1,
+        .note-content.markdown h2,
+        .note-content.markdown h3 {
+            margin: 10px 0;
+            color: var(--dark);
+        }
+
+        .note-content.markdown h1 {
+            font-size: 1.5rem;
+        }
+
+        .note-content.markdown h2 {
+            font-size: 1.3rem;
+        }
+
+        .note-content.markdown h3 {
+            font-size: 1.1rem;
+        }
+
+        .note-content.markdown strong {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .note-content.markdown em {
+            font-style: italic;
+        }
+
+        .note-content.markdown code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .note-content.markdown ul {
+            margin-left: 20px;
+            list-style-type: disc;
+        }
+
         .read-more {
             color: var(--primary);
             cursor: pointer;
@@ -542,6 +660,11 @@
         .ai-tag {
             background: rgba(16, 185, 129, 0.1);
             color: var(--secondary);
+        }
+
+        .markdown-tag {
+            background: #f3f4f6;
+            color: #6b7280;
         }
 
         .note-actions {
@@ -738,6 +861,98 @@
             max-width: 400px;
         }
 
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .toast-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .toast-error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .toast-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .toast-info {
+            background: var(--primary);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Statistics Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Keyboard Shortcuts Grid */
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 15px;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        kbd {
+            background: #f3f4f6;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            min-width: 120px;
+            text-align: center;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .main-content {
@@ -818,12 +1033,22 @@
                 padding: 20px;
                 margin: 15px;
             }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
             .header-content {
                 flex-direction: column;
                 text-align: center;
+                gap: 10px;
+            }
+            
+            .header-controls {
+                width: 100%;
+                justify-content: center;
             }
             
             .ai-status {
@@ -839,6 +1064,15 @@
             .waveform-container {
                 height: 60px;
             }
+            
+            .search-container {
+                width: 100%;
+            }
+            
+            .search-container input {
+                min-width: 0;
+                flex: 1;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -851,12 +1085,21 @@
             <div class="header-content">
                 <div class="app-title">
                     <div>
-                        <h1><i class="fas fa-robot"></i> AI Voice Notes</h1>
-                        <p>Live transcription with AI-powered note enhancement - 100% Offline</p>
+                        <h1><i class="fas fa-robot"></i> AI Voice Notes Pro</h1>
+                        <p>Advanced voice-to-text with AI enhancement - 100% Offline</p>
                     </div>
                 </div>
-                <div class="ai-status online">
-                    AI Assistant Ready (Offline Mode)
+                <div class="header-controls">
+                    <button class="header-btn" id="exportBtn" title="Export all data">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <label class="header-btn" for="importFile" title="Import data">
+                        <i class="fas fa-upload"></i> Import
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </label>
+                    <div class="ai-status online">
+                        AI Assistant Ready (Offline Mode)
+                    </div>
                 </div>
             </div>
         </header>
@@ -896,6 +1139,12 @@
                     <section class="transcription-section" id="transcriptionSection">
                         <div class="section-header">
                             <h3><i class="fas fa-microphone"></i> Live Transcription</h3>
+                            <div class="search-container">
+                                <input type="text" id="searchInput" placeholder="Search notes...">
+                                <button class="search-btn" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="transcription-box" id="transcriptionBox">
@@ -941,6 +1190,15 @@
                         <button class="control-btn clear-btn" id="clearBtn">
                             <i class="fas fa-eraser"></i> Clear
                         </button>
+                        <button class="control-btn voice-command-btn" id="voiceCommandBtn">
+                            <i class="fas fa-microphone-alt"></i> Voice Commands
+                        </button>
+                        <button class="control-btn stats-btn" id="statsBtn">
+                            <i class="fas fa-chart-bar"></i> Statistics
+                        </button>
+                        <button class="control-btn help-btn" id="helpBtn">
+                            <i class="fas fa-question-circle"></i> Help
+                        </button>
                     </div>
                 </div>
             </main>
@@ -964,6 +1222,7 @@
                     <option value="personal">Personal</option>
                     <option value="ideas">Ideas</option>
                     <option value="meetings">Meetings</option>
+                    <option value="projects">Projects</option>
                 </select>
             </div>
             <div class="form-group">
@@ -1009,10 +1268,13 @@
     </div>
 
     <script>
-        // App State
+        // ============================================
+        // APP STATE & INITIALIZATION
+        // ============================================
+        
         const state = {
             currentNotebook: null,
-            notebooks: JSON.parse(localStorage.getItem('aiVoiceNotesOffline')) || [],
+            notebooks: JSON.parse(localStorage.getItem('aiVoiceNotesPro')) || [],
             isTranscribing: false,
             recognition: null,
             finalTranscript: '',
@@ -1022,7 +1284,9 @@
             dataArray: null,
             animationId: null,
             mediaStream: null,
-            currentTranscription: ''
+            currentTranscription: '',
+            commandRecognition: null,
+            searchQuery: ''
         };
 
         // DOM Elements
@@ -1034,6 +1298,13 @@
             recordBtn: document.getElementById('recordBtn'),
             aiProcessBtn: document.getElementById('aiProcessBtn'),
             clearBtn: document.getElementById('clearBtn'),
+            voiceCommandBtn: document.getElementById('voiceCommandBtn'),
+            statsBtn: document.getElementById('statsBtn'),
+            helpBtn: document.getElementById('helpBtn'),
+            exportBtn: document.getElementById('exportBtn'),
+            importFile: document.getElementById('importFile'),
+            searchInput: document.getElementById('searchInput'),
+            searchBtn: document.getElementById('searchBtn'),
             liveTranscription: document.getElementById('liveTranscription'),
             transcriptionSection: document.getElementById('transcriptionSection'),
             transcriptionStatus: document.getElementById('transcriptionStatus'),
@@ -1053,64 +1324,283 @@
                 renderNotebooks();
                 setupEventListeners();
                 setupAudioVisualizer();
+                setupVoiceCommands();
                 
-                // Initialize with sample notebooks if empty
                 if (state.notebooks.length === 0) {
                     createSampleData();
                 }
+                
+                // Load first notebook if exists
+                if (state.notebooks.length > 0 && state.currentNotebook === null) {
+                    selectNotebook(0);
+                }
+                
+                // Setup keyboard shortcuts
+                setupKeyboardShortcuts();
             }
         }
 
-        // Create sample data for demo
-        function createSampleData() {
-            const sampleNotebooks = [
-                {
-                    id: Date.now(),
-                    name: 'Meeting Notes',
-                    category: 'meetings',
-                    description: 'Notes from team meetings and discussions',
-                    created: new Date().toISOString(),
-                    notes: [
-                        {
-                            id: Date.now() + 1,
-                            title: 'Weekly Team Sync',
-                            content: `SUMMARY:\nDiscussed project timelines and resource allocation.\n\nKEY POINTS:\n• Project deadline moved to next Friday\n• Need 2 more developers for frontend work\n• Client meeting scheduled for Wednesday\n• Budget review completed\n\nACTION ITEMS:\n• John to send updated timeline\n• Sarah to schedule interviews\n• Mike to prepare client presentation`,
-                            tags: ['meeting', 'timeline', 'resources'],
-                            created: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-                            isAIEnhanced: true
-                        }
-                    ]
-                },
-                {
-                    id: Date.now() + 2,
-                    name: 'Lecture Notes',
-                    category: 'education',
-                    description: 'University lectures and study materials',
-                    created: new Date().toISOString(),
-                    notes: []
-                },
-                {
-                    id: Date.now() + 3,
-                    name: 'Creative Ideas',
-                    category: 'ideas',
-                    description: 'Brainstorming and creative thoughts',
-                    created: new Date().toISOString(),
-                    notes: []
-                }
-            ];
-            
-            state.notebooks = sampleNotebooks;
-            saveToLocalStorage();
-            renderNotebooks();
-            selectNotebook(0);
+        // ============================================
+        // TEXT PROCESSING & AI ENHANCEMENT
+        // ============================================
+
+        // Enhanced text analysis functions
+        function splitIntoSentences(text) {
+            return text.match(/[^.!?]+[.!?]+/g) || [];
         }
 
-        // Initialize Speech Recognition
+        function extractWords(text) {
+            const commonWords = new Set([
+                'the', 'and', 'that', 'for', 'with', 'this', 'have', 'from', 'about',
+                'what', 'was', 'were', 'they', 'their', 'there', 'which', 'when',
+                'would', 'could', 'should', 'will', 'can', 'has', 'had', 'are', 'is',
+                'in', 'on', 'at', 'to', 'of', 'a', 'an', 'as', 'by', 'or', 'it', 'if',
+                'be', 'not', 'so', 'but', 'like', 'just', 'more', 'out', 'up', 'some',
+                'also', 'very', 'much', 'many', 'then', 'than', 'its', 'over', 'under'
+            ]);
+            
+            return text.toLowerCase()
+                .replace(/[^\w\s]/g, ' ')
+                .split(/\s+/)
+                .filter(word => word.length > 2 && !commonWords.has(word));
+        }
+
+        function extractKeywordsAdvanced(text) {
+            const sentences = splitIntoSentences(text);
+            const allWords = extractWords(text);
+            
+            if (allWords.length === 0) return [];
+            
+            // Calculate term frequency
+            const termFreq = {};
+            allWords.forEach(word => {
+                termFreq[word] = (termFreq[word] || 0) + 1;
+            });
+            
+            // Calculate inverse document frequency (simplified)
+            const sentenceCount = sentences.length;
+            const wordDocFreq = {};
+            
+            sentences.forEach(sentence => {
+                const sentenceWords = new Set(extractWords(sentence));
+                sentenceWords.forEach(word => {
+                    wordDocFreq[word] = (wordDocFreq[word] || 0) + 1;
+                });
+            });
+            
+            // Calculate TF-IDF scores
+            const scores = {};
+            Object.keys(termFreq).forEach(word => {
+                const tf = termFreq[word] / allWords.length;
+                const idf = Math.log(sentenceCount / (wordDocFreq[word] || 1));
+                scores[word] = tf * idf;
+            });
+            
+            // Sort by score and return top keywords
+            return Object.entries(scores)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([word]) => word);
+        }
+
+        function analyzeSentiment(text) {
+            const positiveWords = new Set(['good', 'great', 'excellent', 'awesome', 'perfect', 'happy', 'nice', 'well', 'better', 'best', 'love', 'like', 'success', 'win', 'positive', 'amazing', 'wonderful', 'fantastic', 'outstanding']);
+            const negativeWords = new Set(['bad', 'poor', 'terrible', 'awful', 'sad', 'angry', 'hate', 'worse', 'worst', 'problem', 'issue', 'fail', 'negative', 'difficult', 'hard', 'challenging', 'struggle', 'failure']);
+            
+            const words = text.toLowerCase().split(/\s+/);
+            let positive = 0, negative = 0;
+            
+            words.forEach(word => {
+                if (positiveWords.has(word)) positive++;
+                if (negativeWords.has(word)) negative++;
+            });
+            
+            const total = positive + negative;
+            if (total === 0) return 'neutral';
+            
+            const score = (positive - negative) / total;
+            
+            if (score > 0.3) return 'positive';
+            if (score < -0.3) return 'negative';
+            return 'neutral';
+        }
+
+        function detectTopics(text) {
+            const topicKeywords = {
+                'technology': ['code', 'software', 'app', 'website', 'computer', 'tech', 'programming', 'algorithm', 'data', 'system', 'digital', 'internet'],
+                'business': ['business', 'company', 'market', 'sales', 'profit', 'client', 'customer', 'product', 'service', 'strategy', 'management'],
+                'education': ['learn', 'study', 'teach', 'student', 'teacher', 'school', 'university', 'course', 'lesson', 'education', 'training'],
+                'health': ['health', 'medical', 'doctor', 'patient', 'treatment', 'medicine', 'exercise', 'diet', 'wellness', 'fitness', 'healthcare'],
+                'finance': ['money', 'finance', 'bank', 'investment', 'stock', 'budget', 'price', 'cost', 'financial', 'economic', 'revenue'],
+                'project': ['project', 'plan', 'timeline', 'deadline', 'task', 'milestone', 'goal', 'objective', 'deliverable']
+            };
+            
+            const words = extractWords(text);
+            const scores = {};
+            
+            Object.entries(topicKeywords).forEach(([topic, keywords]) => {
+                scores[topic] = words.filter(word => 
+                    keywords.some(keyword => word.includes(keyword) || keyword.includes(word))
+                ).length;
+            });
+            
+            return Object.entries(scores)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1])
+                .map(([topic]) => topic)
+                .slice(0, 3);
+        }
+
+        function extractEntities(text) {
+            const entities = {
+                people: [],
+                dates: [],
+                organizations: []
+            };
+            
+            // Extract dates
+            const datePatterns = [
+                /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g,
+                /\b\d{1,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4}\b/gi,
+                /\b(?:tomorrow|yesterday|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/gi
+            ];
+            
+            datePatterns.forEach(pattern => {
+                const matches = text.match(pattern);
+                if (matches) {
+                    entities.dates.push(...matches);
+                }
+            });
+            
+            // Extract organizations (capitalized phrases)
+            const orgPattern = /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b/g;
+            const orgMatches = text.match(orgPattern);
+            if (orgMatches) {
+                entities.organizations = orgMatches;
+            }
+            
+            return entities;
+        }
+
+        function extractActionItems(sentences) {
+            const actionWords = ['need', 'should', 'must', 'will', 'going to', 'plan to', 'schedule', 'meet', 'discuss', 'review', 'create', 'make', 'do', 'finish', 'complete', 'send', 'email', 'call', 'prepare', 'develop', 'implement'];
+            
+            const actionSentences = sentences.filter(s => 
+                actionWords.some(word => s.toLowerCase().includes(word))
+            ).slice(0, 5);
+            
+            if (actionSentences.length > 0) {
+                return actionSentences.map(s => `• ${s.trim()}`).join('\n');
+            }
+            
+            return '• Review the discussion points\n• Follow up as needed\n• Implement any decisions made';
+        }
+
+        function extractQuestions(sentences) {
+            const questionSentences = sentences.filter(s => 
+                s.trim().endsWith('?')
+            ).slice(0, 3);
+            
+            if (questionSentences.length > 0) {
+                return questionSentences.map(s => `• ${s.trim()}`).join('\n');
+            }
+            
+            return '• No specific questions were raised';
+        }
+
+        function generateEnhancedContentOffline(transcription) {
+            const sentences = splitIntoSentences(transcription);
+            const keywords = extractKeywordsAdvanced(transcription);
+            const sentiment = analyzeSentiment(transcription);
+            const topics = detectTopics(transcription);
+            const entities = extractEntities(transcription);
+            const actionItems = extractActionItems(sentences);
+            const questions = extractQuestions(sentences);
+            
+            // Generate summary (first 2-3 sentences)
+            const summary = sentences.slice(0, Math.min(3, sentences.length))
+                .map(s => s.trim())
+                .join(' ');
+            
+            // Generate key points (most important sentences by length)
+            const keyPoints = sentences
+                .filter(s => s.split(/\s+/).length > 5)
+                .slice(0, 5)
+                .map(s => `• ${s.trim()}`)
+                .join('\n');
+            
+            // Generate structured content
+            const enhancedContent = `
+📊 **ANALYSIS OVERVIEW**
+• Sentiment: ${sentiment.toUpperCase()}
+• Topics: ${topics.join(', ') || 'General discussion'}
+• Key Terms: ${keywords.slice(0, 5).join(', ')}
+
+📝 **EXECUTIVE SUMMARY**
+${summary || 'Summary not available (text too short).'}
+
+🎯 **KEY FINDINGS**
+${keyPoints || 'No key points extracted.'}
+
+✅ **RECOMMENDED ACTIONS**
+${actionItems}
+
+❓ **QUESTIONS RAISED**
+${questions}
+
+📋 **DETAILED NOTES**
+${sentences.slice(0, 8).map((s, i) => `${i + 1}. ${s.trim()}`).join('\n')}
+
+📅 **IMPORTANT DATES**
+${entities.dates.length > 0 ? entities.dates.map(d => `• ${d}`).join('\n') : '• No specific dates mentioned'}
+
+👥 **MENTIONED ENTITIES**
+${entities.organizations.length > 0 ? entities.organizations.map(o => `• ${o}`).join('\n') : '• No organizations specifically mentioned'}
+
+💡 **ADDITIONAL INSIGHTS**
+• Total words: ${extractWords(transcription).length}
+• Main discussion points: ${sentences.length}
+• Actionable items identified: ${actionItems.split('\n').filter(l => l.includes('•')).length}
+• Overall tone: ${sentiment}
+            `.trim();
+            
+            return {
+                content: enhancedContent,
+                tags: keywords.slice(0, 6),
+                metadata: {
+                    sentiment,
+                    topics,
+                    entityCount: entities.dates.length + entities.organizations.length,
+                    wordCount: extractWords(transcription).length,
+                    sentenceCount: sentences.length
+                }
+            };
+        }
+
+        function getDefaultTitle(transcription) {
+            const sentences = splitIntoSentences(transcription);
+            if (sentences.length > 0) {
+                const firstSentence = sentences[0].trim();
+                if (firstSentence.length > 10 && firstSentence.length < 60) {
+                    return firstSentence;
+                }
+                const words = firstSentence.split(/\s+/).slice(0, 6).join(' ');
+                return words + '...';
+            }
+            
+            const now = new Date();
+            return `Note from ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        }
+
+        // ============================================
+        // SPEECH RECOGNITION & AUDIO
+        // ============================================
+
         function initSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
             if (!SpeechRecognition) {
-                alert('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.');
+                showToast('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.', 'error');
                 elements.recordBtn.disabled = true;
                 elements.recordBtn.innerHTML = '<i class="fas fa-times-circle"></i> Not Supported';
                 return false;
@@ -1149,7 +1639,7 @@
                 state.recognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
                     if (event.error === 'no-speech') {
-                        showToast('No speech detected. Please speak louder or check your microphone.', 'warning');
+                        showToast('No speech detected. Please speak louder.', 'warning');
                     } else if (event.error === 'audio-capture') {
                         showToast('No microphone found. Please check your audio device.', 'error');
                     } else if (event.error === 'not-allowed') {
@@ -1169,554 +1659,13 @@
                 return true;
             } catch (error) {
                 console.error('Failed to initialize speech recognition:', error);
+                showToast('Failed to initialize speech recognition', 'error');
                 elements.recordBtn.disabled = true;
                 elements.recordBtn.innerHTML = '<i class="fas fa-times-circle"></i> Initialization Failed';
                 return false;
             }
         }
 
-        // Setup Event Listeners
-        function setupEventListeners() {
-            // Notebook modal
-            document.getElementById('createNotebookBtn').addEventListener('click', () => {
-                document.getElementById('notebookName').value = '';
-                document.getElementById('notebookDescription').value = '';
-                elements.notebookModal.style.display = 'flex';
-            });
-
-            document.getElementById('cancelNotebookBtn').addEventListener('click', () => {
-                elements.notebookModal.style.display = 'none';
-            });
-
-            document.getElementById('confirmNotebookBtn').addEventListener('click', createNotebook);
-
-            // Save note modal
-            document.getElementById('cancelSaveBtn').addEventListener('click', () => {
-                elements.saveNoteModal.style.display = 'none';
-            });
-
-            document.getElementById('confirmSaveBtn').addEventListener('click', saveEnhancedNote);
-
-            // Control buttons
-            elements.recordBtn.addEventListener('click', toggleTranscription);
-            elements.aiProcessBtn.addEventListener('click', enhanceWithAI);
-            elements.clearBtn.addEventListener('click', clearTranscription);
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === ' ') {
-                    e.preventDefault();
-                    toggleTranscription();
-                }
-                if (e.ctrlKey && e.key === 'Enter') {
-                    e.preventDefault();
-                    if (!elements.aiProcessBtn.disabled) enhanceWithAI();
-                }
-                if (e.key === 'Escape') {
-                    if (state.isTranscribing) toggleTranscription();
-                }
-            });
-
-            // Close modals on outside click
-            window.addEventListener('click', (e) => {
-                if (e.target === elements.notebookModal) {
-                    elements.notebookModal.style.display = 'none';
-                }
-                if (e.target === elements.saveNoteModal) {
-                    elements.saveNoteModal.style.display = 'none';
-                }
-            });
-        }
-
-        // Notebook Functions
-        function renderNotebooks() {
-            elements.notebooksList.innerHTML = '';
-            
-            if (state.notebooks.length === 0) {
-                elements.notebooksList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📚</div>
-                        <h3>No notebooks yet</h3>
-                        <p>Create your first notebook to get started!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            state.notebooks.forEach((notebook, index) => {
-                const notebookItem = document.createElement('div');
-                notebookItem.className = 'notebook-item';
-                if (state.currentNotebook === index) {
-                    notebookItem.classList.add('active');
-                }
-                
-                notebookItem.innerHTML = `
-                    <div class="notebook-category">${notebook.category}</div>
-                    <div class="notebook-title">
-                        <span>${notebook.name}</span>
-                        <span class="note-count">${notebook.notes.length}</span>
-                    </div>
-                    <p style="margin-top: 8px; color: #666; font-size: 0.9rem; line-height: 1.4;">${notebook.description || 'No description'}</p>
-                `;
-                
-                notebookItem.addEventListener('click', () => selectNotebook(index));
-                elements.notebooksList.appendChild(notebookItem);
-            });
-            
-            updateNotesCount();
-        }
-
-        function createNotebook() {
-            const name = document.getElementById('notebookName').value.trim();
-            const category = document.getElementById('notebookCategory').value;
-            const description = document.getElementById('notebookDescription').value.trim();
-
-            if (!name) {
-                showToast('Please enter a notebook name', 'warning');
-                return;
-            }
-
-            const newNotebook = {
-                id: Date.now(),
-                name,
-                category,
-                description,
-                created: new Date().toISOString(),
-                notes: []
-            };
-
-            state.notebooks.push(newNotebook);
-            saveToLocalStorage();
-            renderNotebooks();
-            elements.notebookModal.style.display = 'none';
-            
-            // Select the new notebook
-            selectNotebook(state.notebooks.length - 1);
-            showToast(`Created notebook: ${name}`, 'success');
-        }
-
-        function selectNotebook(index) {
-            state.currentNotebook = index;
-            renderNotebooks();
-            renderNotes();
-            
-            const notebook = state.notebooks[index];
-            elements.currentNotebookTitle.textContent = notebook.name;
-            elements.currentNotebookDescription.textContent = notebook.description || 'Start recording notes';
-            
-            // Update status
-            elements.statusText.textContent = `Ready to transcribe in "${notebook.name}"`;
-            elements.aiProcessBtn.disabled = true;
-        }
-
-        // Transcription Functions
-        function toggleTranscription() {
-            if (!state.isTranscribing) {
-                startTranscription();
-            } else {
-                stopTranscription();
-            }
-        }
-
-        async function startTranscription() {
-            if (!state.recognition) {
-                showToast('Speech recognition is not available', 'error');
-                return;
-            }
-
-            if (state.currentNotebook === null) {
-                showToast('Please select a notebook first', 'warning');
-                return;
-            }
-
-            state.finalTranscript = '';
-            state.interimTranscript = '';
-            state.currentTranscription = '';
-            updateTranscriptionDisplay();
-            
-            try {
-                // Request microphone access
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        sampleRate: 44100
-                    }
-                });
-                
-                state.mediaStream = stream;
-                setupAudioVisualizer(stream);
-                state.recognition.start();
-                elements.transcriptionSection.classList.add('active');
-                
-            } catch (err) {
-                console.error('Error accessing microphone:', err);
-                showToast('Could not access microphone. Please check permissions.', 'error');
-                // Try to start recognition anyway (some browsers don't need stream for speech recognition)
-                try {
-                    state.recognition.start();
-                    elements.transcriptionSection.classList.add('active');
-                } catch (e) {
-                    console.error('Failed to start recognition:', e);
-                }
-            }
-        }
-
-        function stopTranscription() {
-            if (state.recognition && state.isTranscribing) {
-                state.recognition.stop();
-            }
-            if (state.mediaStream) {
-                state.mediaStream.getTracks().forEach(track => track.stop());
-                state.mediaStream = null;
-            }
-            elements.transcriptionSection.classList.remove('active');
-            cancelAnimationFrame(state.animationId);
-            drawSilentWaveform();
-        }
-
-        function updateUIForTranscribing(isTranscribing) {
-            if (isTranscribing) {
-                elements.recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Transcription';
-                elements.recordBtn.classList.add('recording');
-                elements.statusText.textContent = 'Listening... Speak now';
-                elements.transcribingIndicator.style.display = 'inline-block';
-                elements.aiProcessBtn.disabled = true;
-                elements.clearBtn.disabled = true;
-            } else {
-                elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Transcription';
-                elements.recordBtn.classList.remove('recording');
-                elements.statusText.textContent = 'Transcription complete';
-                elements.transcribingIndicator.style.display = 'none';
-                elements.clearBtn.disabled = false;
-                
-                if (state.currentTranscription.trim().length > 30) {
-                    elements.aiProcessBtn.disabled = false;
-                }
-            }
-        }
-
-        function updateTranscriptionDisplay() {
-            const displayText = state.currentTranscription + state.interimTranscript;
-            if (displayText.trim()) {
-                elements.liveTranscription.textContent = displayText;
-                elements.liveTranscription.style.color = 'var(--dark)';
-            } else {
-                elements.liveTranscription.innerHTML = '🎤 Click "Start Transcription" and begin speaking. Your words will appear here in real-time.<br><br>💡 <strong>Tip:</strong> Speak clearly and at a normal pace for best results.';
-                elements.liveTranscription.style.color = 'var(--gray)';
-            }
-            
-            // Auto-scroll to bottom
-            elements.liveTranscription.scrollTop = elements.liveTranscription.scrollHeight;
-        }
-
-        function clearTranscription() {
-            if (state.isTranscribing) {
-                showToast('Please stop transcription first', 'warning');
-                return;
-            }
-            
-            state.currentTranscription = '';
-            state.finalTranscript = '';
-            state.interimTranscript = '';
-            updateTranscriptionDisplay();
-            elements.aiProcessBtn.disabled = true;
-            elements.statusText.textContent = 'Ready to transcribe';
-            showToast('Transcription cleared', 'info');
-        }
-
-        // AI Enhancement Functions
-        async function enhanceWithAI() {
-            if (!state.currentTranscription.trim()) {
-                showToast('No transcription to enhance', 'warning');
-                return;
-            }
-
-            if (state.currentNotebook === null) {
-                showToast('Please select a notebook first', 'warning');
-                return;
-            }
-
-            if (state.currentTranscription.trim().length < 30) {
-                showToast('Transcription is too short. Please record more speech.', 'warning');
-                return;
-            }
-
-            // Show AI processing overlay
-            elements.aiProcessing.classList.add('active');
-            elements.aiProcessMessage.textContent = 'Analyzing your transcription...';
-
-            try {
-                // Simulate AI processing (100% offline)
-                await simulateAIProcessing();
-                
-                // Generate enhanced content using offline algorithms
-                const enhancedContent = generateEnhancedContentOffline(state.currentTranscription);
-                
-                // Show save modal with AI-enhanced content
-                const defaultTitle = getDefaultTitle(state.currentTranscription);
-                document.getElementById('enhancedNoteTitle').value = defaultTitle;
-                document.getElementById('enhancedNoteContent').value = enhancedContent.content;
-                
-                // Generate and display AI tags
-                const tagsContainer = document.getElementById('aiTags');
-                tagsContainer.innerHTML = '';
-                enhancedContent.tags.forEach(tag => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'tag ai-tag';
-                    tagElement.textContent = `#${tag}`;
-                    tagsContainer.appendChild(tagElement);
-                });
-                
-                elements.saveNoteModal.style.display = 'flex';
-                
-            } catch (error) {
-                console.error('AI processing error:', error);
-                showToast('Error processing with AI. Please try again.', 'error');
-            } finally {
-                elements.aiProcessing.classList.remove('active');
-            }
-        }
-
-        function simulateAIProcessing() {
-            return new Promise(resolve => {
-                // Show different messages during processing
-                const messages = [
-                    'Analyzing your transcription...',
-                    'Extracting key points...',
-                    'Generating summaries...',
-                    'Creating detailed notes...',
-                    'Finalizing enhancements...'
-                ];
-                
-                let currentMessage = 0;
-                const interval = setInterval(() => {
-                    if (currentMessage < messages.length) {
-                        elements.aiProcessMessage.textContent = messages[currentMessage];
-                        currentMessage++;
-                    }
-                }, 400);
-                
-                setTimeout(() => {
-                    clearInterval(interval);
-                    resolve();
-                }, 2000);
-            });
-        }
-
-        function generateEnhancedContentOffline(transcription) {
-            // Offline AI simulation using text analysis algorithms
-            
-            // Extract sentences
-            const sentences = transcription.split(/[.!?]+/).filter(s => s.trim().length > 10);
-            
-            // Extract important words (excluding common words)
-            const commonWords = new Set(['the', 'and', 'that', 'for', 'with', 'this', 'have', 'from', 'about', 'what', 'was', 'were', 'they', 'their', 'there', 'which', 'when', 'would', 'could', 'should', 'will', 'can', 'has', 'had', 'are', 'is', 'in', 'on', 'at', 'to', 'of', 'a', 'an', 'as', 'by', 'or', 'it', 'if', 'be', 'not', 'so', 'but', 'like', 'just', 'more', 'out', 'up', 'some', 'also']);
-            
-            const words = transcription.toLowerCase()
-                .replace(/[^\w\s]/g, ' ')
-                .split(/\s+/)
-                .filter(word => word.length > 3 && !commonWords.has(word));
-            
-            // Count word frequency
-            const wordFrequency = {};
-            words.forEach(word => {
-                wordFrequency[word] = (wordFrequency[word] || 0) + 1;
-            });
-            
-            // Get top keywords (tags)
-            const tags = Object.entries(wordFrequency)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5)
-                .map(([word]) => word);
-            
-            // Generate sections
-            const summary = sentences.length > 0 
-                ? sentences.slice(0, Math.min(3, sentences.length)).join('. ') + '.' 
-                : 'Summary not available (text too short).';
-            
-            const keyPoints = sentences.slice(0, Math.min(5, sentences.length))
-                .map((sentence, i) => `• ${sentence.trim()}.`)
-                .join('\n');
-            
-            // Detect action items
-            const actionWords = ['need', 'should', 'must', 'will', 'going to', 'plan to', 'schedule', 'meet', 'discuss', 'review', 'create', 'make', 'do', 'finish', 'complete', 'send', 'email', 'call'];
-            const actionSentences = sentences.filter(s => 
-                actionWords.some(word => s.toLowerCase().includes(word))
-            ).slice(0, 3);
-            
-            const actionItems = actionSentences.length > 0
-                ? actionSentences.map(s => `• ${s.trim()}.`).join('\n')
-                : '• Review the discussion points\n• Follow up as needed\n• Implement any decisions made';
-            
-            // Generate enhanced content
-            const enhancedContent = `
-📝 SUMMARY:
-${summary}
-
-🔑 KEY POINTS:
-${keyPoints}
-
-✅ ACTION ITEMS:
-${actionItems}
-
-📋 DETAILED NOTES:
-${sentences.slice(0, Math.min(8, sentences.length))
-    .map((sentence, i) => `${i + 1}. ${sentence.trim()}.`)
-    .join('\n')}
-
-💡 INSIGHTS:
-• The conversation contains ${words.length} significant words
-• Main topics include: ${tags.slice(0, 3).join(', ')}
-• ${sentences.length} key points were discussed
-• ${actionSentences.length} actionable items identified
-            `.trim();
-            
-            return {
-                content: enhancedContent,
-                tags: tags
-            };
-        }
-
-        function getDefaultTitle(transcription) {
-            // Extract first meaningful sentence or use keywords for title
-            const sentences = transcription.split(/[.!?]+/).filter(s => s.trim().length > 10);
-            if (sentences.length > 0) {
-                const firstSentence = sentences[0].trim();
-                if (firstSentence.length > 10 && firstSentence.length < 50) {
-                    return firstSentence;
-                }
-                // Take first 5 words if sentence is too long
-                const words = firstSentence.split(/\s+/).slice(0, 5).join(' ');
-                return words + '...';
-            }
-            
-            // Fallback to date-based title
-            const now = new Date();
-            return `Note from ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-        }
-
-        // Note Functions
-        function saveEnhancedNote() {
-            const title = document.getElementById('enhancedNoteTitle').value.trim();
-            const content = document.getElementById('enhancedNoteContent').value.trim();
-
-            if (!title || !content) {
-                showToast('Please fill in all fields', 'warning');
-                return;
-            }
-
-            const tags = Array.from(document.querySelectorAll('#aiTags .tag'))
-                .map(tag => tag.textContent.replace('#', ''));
-
-            const newNote = {
-                id: Date.now(),
-                title,
-                content,
-                originalTranscription: state.currentTranscription,
-                tags,
-                created: new Date().toISOString(),
-                isAIEnhanced: true
-            };
-
-            state.notebooks[state.currentNotebook].notes.unshift(newNote);
-            saveToLocalStorage();
-            renderNotes();
-            renderNotebooks();
-            
-            elements.saveNoteModal.style.display = 'none';
-            clearTranscription();
-            
-            showToast('Note saved successfully!', 'success');
-        }
-
-        function renderNotes() {
-            if (state.currentNotebook === null) {
-                elements.notesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📚</div>
-                        <h3>Select a Notebook</h3>
-                        <p>Choose a notebook to view its notes</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const notebook = state.notebooks[state.currentNotebook];
-            
-            if (notebook.notes.length === 0) {
-                elements.notesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📝</div>
-                        <h3>No notes yet</h3>
-                        <p>Start transcribing and enhance with AI to create notes</p>
-                    </div>
-                `;
-                return;
-            }
-
-            elements.notesContainer.innerHTML = '';
-            notebook.notes.forEach((note, index) => {
-                const noteCard = document.createElement('div');
-                noteCard.className = `note-card ${note.isAIEnhanced ? 'ai-enhanced' : ''}`;
-                
-                // Truncate content for preview
-                const previewContent = note.content.length > 200 ? 
-                    note.content.substring(0, 200) + '...' : note.content;
-                
-                noteCard.innerHTML = `
-                    <div class="note-header">
-                        <div class="note-title">${note.title}</div>
-                        <div class="note-date">${formatDate(note.created)}</div>
-                    </div>
-                    <div class="note-content">
-                        ${previewContent.replace(/\n/g, '<br>')}
-                        ${note.content.length > 200 ? 
-                            `<span class="read-more" onclick="toggleNoteExpand(this)">Read more</span>` : ''}
-                    </div>
-                    <div class="note-footer">
-                        <div class="note-tags">
-                            ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            ${note.isAIEnhanced ? '<span class="tag ai-tag"><i class="fas fa-robot"></i> AI Enhanced</span>' : ''}
-                        </div>
-                        <div class="note-actions">
-                            <button class="action-btn delete-btn" onclick="deleteNote(${index})" title="Delete note">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                elements.notesContainer.appendChild(noteCard);
-            });
-            
-            updateNotesCount();
-        }
-
-        function deleteNote(noteIndex) {
-            if (confirm('Are you sure you want to delete this note?')) {
-                state.notebooks[state.currentNotebook].notes.splice(noteIndex, 1);
-                saveToLocalStorage();
-                renderNotes();
-                renderNotebooks();
-                showToast('Note deleted', 'info');
-            }
-        }
-
-        function toggleNoteExpand(element) {
-            const noteContent = element.parentElement;
-            const isExpanded = noteContent.classList.contains('expanded');
-            
-            if (isExpanded) {
-                noteContent.classList.remove('expanded');
-                element.textContent = 'Read more';
-            } else {
-                noteContent.classList.add('expanded');
-                element.textContent = 'Read less';
-            }
-        }
-
-        // Audio Visualization
         function setupAudioVisualizer(stream = null) {
             if (!state.audioContext) {
                 state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1795,7 +1744,6 @@ ${sentences.slice(0, Math.min(8, sentences.length))
             const width = canvas.width = canvas.offsetWidth;
             const height = canvas.height = canvas.offsetHeight;
 
-            // Clear with light background
             ctx.fillStyle = 'rgba(249, 250, 251, 1)';
             ctx.fillRect(0, 0, width, height);
 
@@ -1808,7 +1756,836 @@ ${sentences.slice(0, Math.min(8, sentences.length))
             ctx.stroke();
         }
 
-        // Utility Functions
+        // ============================================
+        // NOTEBOOK & NOTE MANAGEMENT
+        // ============================================
+
+        function createSampleData() {
+            const sampleNotebooks = [
+                {
+                    id: Date.now(),
+                    name: 'Meeting Notes',
+                    category: 'meetings',
+                    description: 'Notes from team meetings and discussions',
+                    created: new Date().toISOString(),
+                    notes: [
+                        {
+                            id: Date.now() + 1,
+                            title: 'Weekly Team Sync',
+                            content: `📊 **ANALYSIS OVERVIEW**
+• Sentiment: POSITIVE
+• Topics: technology, business
+• Key Terms: project, timeline, development
+
+📝 **EXECUTIVE SUMMARY**
+We discussed the project timeline and resource allocation for the upcoming quarter.
+
+🎯 **KEY FINDINGS**
+• Project deadline moved to next Friday
+• Need 2 more developers for frontend work
+• Client meeting scheduled for Wednesday
+• Budget review completed successfully
+
+✅ **RECOMMENDED ACTIONS**
+• John to send updated timeline by tomorrow
+• Sarah to schedule interviews for new developers
+• Mike to prepare client presentation for Wednesday
+
+❓ **QUESTIONS RAISED**
+• What are the specific requirements for the new developers?
+• When will the client be available for the demo?
+
+📋 **DETAILED NOTES**
+1. Project progress is on track.
+2. Frontend development needs additional resources.
+3. Client demo scheduled for next week.
+4. Budget has been approved.
+5. Team morale is high.
+
+💡 **ADDITIONAL INSIGHTS**
+• Total words: 45
+• Main discussion points: 5
+• Actionable items identified: 3
+• Overall tone: positive`,
+                            tags: ['meeting', 'timeline', 'resources', 'project'],
+                            created: new Date(Date.now() - 86400000).toISOString(),
+                            isAIEnhanced: true
+                        }
+                    ]
+                },
+                {
+                    id: Date.now() + 2,
+                    name: 'Lecture Notes',
+                    category: 'education',
+                    description: 'University lectures and study materials',
+                    created: new Date().toISOString(),
+                    notes: []
+                },
+                {
+                    id: Date.now() + 3,
+                    name: 'Creative Ideas',
+                    category: 'ideas',
+                    description: 'Brainstorming and creative thoughts',
+                    created: new Date().toISOString(),
+                    notes: []
+                }
+            ];
+            
+            state.notebooks = sampleNotebooks;
+            saveToLocalStorage();
+            renderNotebooks();
+        }
+
+        function renderNotebooks() {
+            elements.notebooksList.innerHTML = '';
+            
+            if (state.notebooks.length === 0) {
+                elements.notebooksList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📚</div>
+                        <h3>No notebooks yet</h3>
+                        <p>Create your first notebook to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            state.notebooks.forEach((notebook, index) => {
+                const notebookItem = document.createElement('div');
+                notebookItem.className = 'notebook-item';
+                if (state.currentNotebook === index) {
+                    notebookItem.classList.add('active');
+                }
+                
+                notebookItem.innerHTML = `
+                    <div class="notebook-category">${notebook.category}</div>
+                    <div class="notebook-title">
+                        <span>${notebook.name}</span>
+                        <span class="note-count">${notebook.notes.length}</span>
+                    </div>
+                    <p style="margin-top: 8px; color: #666; font-size: 0.9rem; line-height: 1.4;">${notebook.description || 'No description'}</p>
+                `;
+                
+                notebookItem.addEventListener('click', () => selectNotebook(index));
+                elements.notebooksList.appendChild(notebookItem);
+            });
+            
+            updateNotesCount();
+        }
+
+        function selectNotebook(index) {
+            state.currentNotebook = index;
+            renderNotebooks();
+            renderNotes();
+            
+            const notebook = state.notebooks[index];
+            elements.currentNotebookTitle.textContent = notebook.name;
+            elements.currentNotebookDescription.textContent = notebook.description || 'Start recording notes';
+            
+            elements.statusText.textContent = `Ready to transcribe in "${notebook.name}"`;
+            elements.aiProcessBtn.disabled = true;
+            
+            // Clear search when switching notebooks
+            elements.searchInput.value = '';
+            state.searchQuery = '';
+        }
+
+        function renderNotes() {
+            if (state.currentNotebook === null) {
+                elements.notesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📚</div>
+                        <h3>Select a Notebook</h3>
+                        <p>Choose a notebook to view its notes</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notebook = state.notebooks[state.currentNotebook];
+            let notesToDisplay = notebook.notes;
+            
+            // Apply search filter if active
+            if (state.searchQuery) {
+                const query = state.searchQuery.toLowerCase();
+                notesToDisplay = notesToDisplay.filter(note => 
+                    note.title.toLowerCase().includes(query) ||
+                    note.content.toLowerCase().includes(query) ||
+                    note.tags.some(tag => tag.toLowerCase().includes(query))
+                );
+            }
+            
+            if (notesToDisplay.length === 0) {
+                elements.notesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">${state.searchQuery ? '🔍' : '📝'}</div>
+                        <h3>${state.searchQuery ? 'No results found' : 'No notes yet'}</h3>
+                        <p>${state.searchQuery ? `No notes match "${state.searchQuery}"` : 'Start transcribing and enhance with AI to create notes'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.notesContainer.innerHTML = '';
+            notesToDisplay.forEach((note, index) => {
+                const originalIndex = notebook.notes.findIndex(n => n.id === note.id);
+                const noteCard = createNoteCard(note, originalIndex);
+                elements.notesContainer.appendChild(noteCard);
+            });
+            
+            updateNotesCount();
+        }
+
+        function createNoteCard(note, index) {
+            const noteCard = document.createElement('div');
+            noteCard.className = `note-card ${note.isAIEnhanced ? 'ai-enhanced' : ''}`;
+            
+            // Check if content has markdown
+            const hasMarkdown = note.content.includes('# ') || 
+                               note.content.includes('**') || 
+                               note.content.includes('* ') ||
+                               note.content.includes('`');
+            
+            const previewContent = note.content.length > 200 ? 
+                note.content.substring(0, 200) + '...' : note.content;
+            
+            const displayContent = hasMarkdown ? 
+                renderMarkdown(previewContent) : 
+                previewContent.replace(/\n/g, '<br>');
+            
+            noteCard.innerHTML = `
+                <div class="note-header">
+                    <div class="note-title">${note.title}</div>
+                    <div class="note-date">${formatDate(note.created)}</div>
+                </div>
+                <div class="note-content ${hasMarkdown ? 'markdown' : ''}">
+                    ${displayContent}
+                    ${note.content.length > 200 ? 
+                        `<span class="read-more" onclick="toggleNoteExpand(this)">Read more</span>` : ''}
+                </div>
+                <div class="note-footer">
+                    <div class="note-tags">
+                        ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        ${hasMarkdown ? '<span class="tag markdown-tag"><i class="fas fa-code"></i> Markdown</span>' : ''}
+                        ${note.isAIEnhanced ? '<span class="tag ai-tag"><i class="fas fa-robot"></i> AI Enhanced</span>' : ''}
+                    </div>
+                    <div class="note-actions">
+                        <button class="action-btn delete-btn" onclick="deleteNote(${index})" title="Delete note">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return noteCard;
+        }
+
+        function renderMarkdown(content) {
+            return content
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // ============================================
+        // TRANSCRIPTION FUNCTIONS
+        // ============================================
+
+        async function startTranscription() {
+            if (!state.recognition) {
+                showToast('Speech recognition is not available', 'error');
+                return;
+            }
+
+            if (state.currentNotebook === null) {
+                showToast('Please select a notebook first', 'warning');
+                return;
+            }
+
+            state.finalTranscript = '';
+            state.interimTranscript = '';
+            state.currentTranscription = '';
+            updateTranscriptionDisplay();
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                
+                state.mediaStream = stream;
+                setupAudioVisualizer(stream);
+                state.recognition.start();
+                elements.transcriptionSection.classList.add('active');
+                
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                showToast('Could not access microphone. Please check permissions.', 'error');
+                try {
+                    state.recognition.start();
+                    elements.transcriptionSection.classList.add('active');
+                } catch (e) {
+                    console.error('Failed to start recognition:', e);
+                }
+            }
+        }
+
+        function stopTranscription() {
+            if (state.recognition && state.isTranscribing) {
+                state.recognition.stop();
+            }
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(track => track.stop());
+                state.mediaStream = null;
+            }
+            elements.transcriptionSection.classList.remove('active');
+            cancelAnimationFrame(state.animationId);
+            drawSilentWaveform();
+        }
+
+        function toggleTranscription() {
+            if (!state.isTranscribing) {
+                startTranscription();
+            } else {
+                stopTranscription();
+            }
+        }
+
+        function updateUIForTranscribing(isTranscribing) {
+            if (isTranscribing) {
+                elements.recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Transcription';
+                elements.recordBtn.classList.add('recording');
+                elements.statusText.textContent = 'Listening... Speak now';
+                elements.transcribingIndicator.style.display = 'inline-block';
+                elements.aiProcessBtn.disabled = true;
+                elements.clearBtn.disabled = true;
+            } else {
+                elements.recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Transcription';
+                elements.recordBtn.classList.remove('recording');
+                elements.statusText.textContent = 'Transcription complete';
+                elements.transcribingIndicator.style.display = 'none';
+                elements.clearBtn.disabled = false;
+                
+                if (state.currentTranscription.trim().length > 30) {
+                    elements.aiProcessBtn.disabled = false;
+                }
+            }
+        }
+
+        function updateTranscriptionDisplay() {
+            const displayText = state.currentTranscription + state.interimTranscript;
+            if (displayText.trim()) {
+                elements.liveTranscription.textContent = displayText;
+                elements.liveTranscription.style.color = 'var(--dark)';
+            } else {
+                elements.liveTranscription.innerHTML = '🎤 Click "Start Transcription" and begin speaking. Your words will appear here in real-time.<br><br>💡 <strong>Tip:</strong> Speak clearly and at a normal pace for best results.';
+                elements.liveTranscription.style.color = 'var(--gray)';
+            }
+            
+            elements.liveTranscription.scrollTop = elements.liveTranscription.scrollHeight;
+        }
+
+        function clearTranscription() {
+            if (state.isTranscribing) {
+                showToast('Please stop transcription first', 'warning');
+                return;
+            }
+            
+            state.currentTranscription = '';
+            state.finalTranscript = '';
+            state.interimTranscript = '';
+            updateTranscriptionDisplay();
+            elements.aiProcessBtn.disabled = true;
+            elements.statusText.textContent = 'Ready to transcribe';
+            showToast('Transcription cleared', 'info');
+        }
+
+        // ============================================
+        // AI ENHANCEMENT FUNCTIONS
+        // ============================================
+
+        async function enhanceWithAI() {
+            if (!state.currentTranscription.trim()) {
+                showToast('No transcription to enhance', 'warning');
+                return;
+            }
+
+            if (state.currentNotebook === null) {
+                showToast('Please select a notebook first', 'warning');
+                return;
+            }
+
+            if (state.currentTranscription.trim().length < 30) {
+                showToast('Transcription is too short. Please record more speech.', 'warning');
+                return;
+            }
+
+            elements.aiProcessing.classList.add('active');
+            elements.aiProcessMessage.textContent = 'Analyzing your transcription...';
+
+            try {
+                await simulateAIProcessing();
+                
+                const enhancedContent = generateEnhancedContentOffline(state.currentTranscription);
+                const defaultTitle = getDefaultTitle(state.currentTranscription);
+                
+                document.getElementById('enhancedNoteTitle').value = defaultTitle;
+                document.getElementById('enhancedNoteContent').value = enhancedContent.content;
+                
+                const tagsContainer = document.getElementById('aiTags');
+                tagsContainer.innerHTML = '';
+                enhancedContent.tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'tag ai-tag';
+                    tagElement.textContent = `#${tag}`;
+                    tagsContainer.appendChild(tagElement);
+                });
+                
+                elements.saveNoteModal.style.display = 'flex';
+                
+            } catch (error) {
+                console.error('AI processing error:', error);
+                showToast('Error processing with AI. Please try again.', 'error');
+            } finally {
+                elements.aiProcessing.classList.remove('active');
+            }
+        }
+
+        function simulateAIProcessing() {
+            return new Promise(resolve => {
+                const messages = [
+                    'Analyzing your transcription...',
+                    'Extracting key points...',
+                    'Generating summaries...',
+                    'Creating detailed notes...',
+                    'Finalizing enhancements...'
+                ];
+                
+                let currentMessage = 0;
+                const interval = setInterval(() => {
+                    if (currentMessage < messages.length) {
+                        elements.aiProcessMessage.textContent = messages[currentMessage];
+                        currentMessage++;
+                    }
+                }, 400);
+                
+                setTimeout(() => {
+                    clearInterval(interval);
+                    resolve();
+                }, 2000);
+            });
+        }
+
+        // ============================================
+        // VOICE COMMANDS
+        // ============================================
+
+        function setupVoiceCommands() {
+            if ('webkitSpeechRecognition' in window) {
+                state.commandRecognition = new webkitSpeechRecognition();
+                state.commandRecognition.continuous = false;
+                state.commandRecognition.interimResults = false;
+                state.commandRecognition.lang = 'en-US';
+                
+                state.commandRecognition.onresult = (event) => {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    processVoiceCommand(command);
+                };
+                
+                state.commandRecognition.onerror = () => {
+                    // Silently handle errors for voice commands
+                };
+            }
+        }
+
+        function toggleVoiceCommands() {
+            if (state.commandRecognition) {
+                state.commandRecognition.start();
+                showToast('Listening for commands... Say "start", "stop", "clear", or "save"', 'info');
+            } else {
+                showToast('Voice commands not supported in this browser', 'warning');
+            }
+        }
+
+        function processVoiceCommand(command) {
+            if (command.includes('start') || command.includes('begin')) {
+                if (!state.isTranscribing) startTranscription();
+            } else if (command.includes('stop') || command.includes('end')) {
+                if (state.isTranscribing) stopTranscription();
+            } else if (command.includes('clear') || command.includes('delete')) {
+                clearTranscription();
+            } else if (command.includes('save') || command.includes('enhance')) {
+                if (!elements.aiProcessBtn.disabled) enhanceWithAI();
+            } else if (command.includes('new notebook')) {
+                document.getElementById('createNotebookBtn').click();
+            }
+        }
+
+        // ============================================
+        // SEARCH FUNCTIONALITY
+        // ============================================
+
+        function setupSearch() {
+            elements.searchBtn.addEventListener('click', () => {
+                performSearch(elements.searchInput.value);
+            });
+            
+            elements.searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch(elements.searchInput.value);
+                }
+            });
+        }
+
+        function performSearch(query) {
+            state.searchQuery = query.trim();
+            renderNotes();
+        }
+
+        // ============================================
+        // EXPORT/IMPORT FUNCTIONALITY
+        // ============================================
+
+        function exportData() {
+            const data = {
+                notebooks: state.notebooks,
+                exportDate: new Date().toISOString(),
+                version: '2.0',
+                app: 'AI Voice Notes Pro'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `ai-voice-notes-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('Data exported successfully', 'success');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (confirm(`Import ${importedData.notebooks.length} notebooks with ${importedData.notebooks.reduce((acc, nb) => acc + nb.notes.length, 0)} total notes? This will replace current data.`)) {
+                        state.notebooks = importedData.notebooks;
+                        saveToLocalStorage();
+                        renderNotebooks();
+                        if (state.notebooks.length > 0) {
+                            selectNotebook(0);
+                        }
+                        showToast('Data imported successfully', 'success');
+                    }
+                } catch (error) {
+                    showToast('Invalid data file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ============================================
+        // STATISTICS & HELP
+        // ============================================
+
+        function showStatistics() {
+            const totalNotes = state.notebooks.reduce((acc, nb) => acc + nb.notes.length, 0);
+            const totalWords = state.notebooks.reduce((acc, nb) => 
+                acc + nb.notes.reduce((sum, note) => sum + (note.content.split(/\s+/).length || 0), 0), 0);
+            const aiEnhancedNotes = state.notebooks.reduce((acc, nb) => 
+                acc + nb.notes.filter(note => note.isAIEnhanced).length, 0);
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <h2><i class="fas fa-chart-bar"></i> App Statistics</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${state.notebooks.length}</div>
+                            <div class="stat-label">Notebooks</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value">${totalNotes}</div>
+                            <div class="stat-label">Total Notes</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value">${totalWords}</div>
+                            <div class="stat-label">Total Words</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value">${aiEnhancedNotes}</div>
+                            <div class="stat-label">AI Enhanced</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;">Notebook Breakdown</h3>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${state.notebooks.map(notebook => `
+                            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>${notebook.name}</strong>
+                                        <div style="font-size: 0.9rem; color: var(--gray);">${notebook.category}</div>
+                                    </div>
+                                    <div style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px;">
+                                        ${notebook.notes.length} notes
+                                    </div>
+                                </div>
+                                ${notebook.notes.length > 0 ? `
+                                    <div style="margin-top: 10px; font-size: 0.9rem;">
+                                        Last note: ${formatDate(notebook.notes[0].created)}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button class="modal-btn cancel-btn" onclick="this.closest('.modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function showKeyboardHelp() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <h2><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h2>
+                    
+                    <div class="shortcuts-grid">
+                        <kbd>Ctrl + Space</kbd>
+                        <span>Start/Stop Transcription</span>
+                        
+                        <kbd>Ctrl + Enter</kbd>
+                        <span>Enhance with AI</span>
+                        
+                        <kbd>Escape</kbd>
+                        <span>Stop Transcription</span>
+                        
+                        <kbd>Ctrl + S</kbd>
+                        <span>Save current note</span>
+                        
+                        <kbd>Ctrl + N</kbd>
+                        <span>New notebook</span>
+                        
+                        <kbd>Ctrl + ?</kbd>
+                        <span>Show this help</span>
+                    </div>
+                    
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                        <h3 style="margin-bottom: 10px; color: var(--primary);">Voice Commands</h3>
+                        <p>Click the <i class="fas fa-microphone-alt"></i> button and say:</p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>"Start" or "Begin" - Start transcription</li>
+                            <li>"Stop" or "End" - Stop transcription</li>
+                            <li>"Clear" or "Delete" - Clear transcription</li>
+                            <li>"Save" or "Enhance" - Enhance with AI</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button class="modal-btn confirm-btn" onclick="this.closest('.modal').remove()">Got it!</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // ============================================
+        // EVENT LISTENERS & UTILITIES
+        // ============================================
+
+        function setupEventListeners() {
+            // Notebook modal
+            document.getElementById('createNotebookBtn').addEventListener('click', () => {
+                document.getElementById('notebookName').value = '';
+                document.getElementById('notebookDescription').value = '';
+                elements.notebookModal.style.display = 'flex';
+            });
+
+            document.getElementById('cancelNotebookBtn').addEventListener('click', () => {
+                elements.notebookModal.style.display = 'none';
+            });
+
+            document.getElementById('confirmNotebookBtn').addEventListener('click', createNotebook);
+
+            // Save note modal
+            document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+                elements.saveNoteModal.style.display = 'none';
+            });
+
+            document.getElementById('confirmSaveBtn').addEventListener('click', saveEnhancedNote);
+
+            // Control buttons
+            elements.recordBtn.addEventListener('click', toggleTranscription);
+            elements.aiProcessBtn.addEventListener('click', enhanceWithAI);
+            elements.clearBtn.addEventListener('click', clearTranscription);
+            elements.voiceCommandBtn.addEventListener('click', toggleVoiceCommands);
+            elements.statsBtn.addEventListener('click', showStatistics);
+            elements.helpBtn.addEventListener('click', showKeyboardHelp);
+            elements.exportBtn.addEventListener('click', exportData);
+            elements.importFile.addEventListener('change', importData);
+            
+            // Search
+            setupSearch();
+
+            // Close modals on outside click
+            window.addEventListener('click', (e) => {
+                if (e.target === elements.notebookModal) {
+                    elements.notebookModal.style.display = 'none';
+                }
+                if (e.target === elements.saveNoteModal) {
+                    elements.saveNoteModal.style.display = 'none';
+                }
+            });
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === ' ') {
+                    e.preventDefault();
+                    toggleTranscription();
+                }
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!elements.aiProcessBtn.disabled) enhanceWithAI();
+                }
+                if (e.key === 'Escape') {
+                    if (state.isTranscribing) toggleTranscription();
+                }
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    if (!elements.aiProcessBtn.disabled) enhanceWithAI();
+                }
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    document.getElementById('createNotebookBtn').click();
+                }
+                if (e.ctrlKey && e.key === '?') {
+                    e.preventDefault();
+                    showKeyboardHelp();
+                }
+            });
+        }
+
+        function createNotebook() {
+            const name = document.getElementById('notebookName').value.trim();
+            const category = document.getElementById('notebookCategory').value;
+            const description = document.getElementById('notebookDescription').value.trim();
+
+            if (!name) {
+                showToast('Please enter a notebook name', 'warning');
+                return;
+            }
+
+            const newNotebook = {
+                id: Date.now(),
+                name,
+                category,
+                description,
+                created: new Date().toISOString(),
+                notes: []
+            };
+
+            state.notebooks.push(newNotebook);
+            saveToLocalStorage();
+            renderNotebooks();
+            elements.notebookModal.style.display = 'none';
+            
+            selectNotebook(state.notebooks.length - 1);
+            showToast(`Created notebook: ${name}`, 'success');
+        }
+
+        function saveEnhancedNote() {
+            const title = document.getElementById('enhancedNoteTitle').value.trim();
+            const content = document.getElementById('enhancedNoteContent').value.trim();
+
+            if (!title || !content) {
+                showToast('Please fill in all fields', 'warning');
+                return;
+            }
+
+            const tags = Array.from(document.querySelectorAll('#aiTags .tag'))
+                .map(tag => tag.textContent.replace('#', ''));
+
+            const newNote = {
+                id: Date.now(),
+                title,
+                content,
+                originalTranscription: state.currentTranscription,
+                tags,
+                created: new Date().toISOString(),
+                isAIEnhanced: true
+            };
+
+            state.notebooks[state.currentNotebook].notes.unshift(newNote);
+            saveToLocalStorage();
+            renderNotes();
+            renderNotebooks();
+            
+            elements.saveNoteModal.style.display = 'none';
+            clearTranscription();
+            
+            showToast('Note saved successfully!', 'success');
+        }
+
+        function deleteNote(noteIndex) {
+            if (confirm('Are you sure you want to delete this note?')) {
+                state.notebooks[state.currentNotebook].notes.splice(noteIndex, 1);
+                saveToLocalStorage();
+                renderNotes();
+                renderNotebooks();
+                showToast('Note deleted', 'info');
+            }
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             const now = new Date();
@@ -1831,70 +2608,45 @@ ${sentences.slice(0, Math.min(8, sentences.length))
 
         function updateNotesCount() {
             if (state.currentNotebook !== null) {
-                const noteCount = state.notebooks[state.currentNotebook].notes.length;
-                elements.notesCount.textContent = `${noteCount} ${noteCount === 1 ? 'note' : 'notes'}`;
+                const notebook = state.notebooks[state.currentNotebook];
+                const displayCount = state.searchQuery ? 
+                    notebook.notes.filter(note => 
+                        note.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                        note.content.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                        note.tags.some(tag => tag.toLowerCase().includes(state.searchQuery.toLowerCase()))
+                    ).length : 
+                    notebook.notes.length;
+                
+                elements.notesCount.textContent = `${displayCount} ${displayCount === 1 ? 'note' : 'notes'}`;
             } else {
                 elements.notesCount.textContent = '0 notes';
             }
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('aiVoiceNotesOffline', JSON.stringify(state.notebooks));
+            localStorage.setItem('aiVoiceNotesPro', JSON.stringify(state.notebooks));
         }
 
         function showToast(message, type = 'info') {
             // Remove existing toast
             const existingToast = document.querySelector('.toast');
             if (existingToast) {
-                existingToast.remove();
+                existingToast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => existingToast.remove(), 300);
             }
             
             // Create toast
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' ? 'check-circle' :
+                        type === 'error' ? 'exclamation-circle' :
+                        type === 'warning' ? 'exclamation-triangle' : 'info-circle';
+            
             toast.innerHTML = `
-                <div class="toast-content">
-                    <i class="fas fa-${getToastIcon(type)}"></i>
-                    <span>${message}</span>
-                </div>
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
             `;
-            
-            // Add styles
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${getToastColor(type)};
-                color: white;
-                padding: 15px 25px;
-                border-radius: 10px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                z-index: 9999;
-                animation: slideIn 0.3s ease;
-                max-width: 400px;
-            `;
-            
-            const toastContent = toast.querySelector('.toast-content');
-            toastContent.style.cssText = `
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                font-weight: 600;
-            `;
-            
-            // Add animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
             
             document.body.appendChild(toast);
             
@@ -1905,35 +2657,35 @@ ${sentences.slice(0, Math.min(8, sentences.length))
             }, 4000);
         }
 
-        function getToastIcon(type) {
-            switch(type) {
-                case 'success': return 'check-circle';
-                case 'error': return 'exclamation-circle';
-                case 'warning': return 'exclamation-triangle';
-                default: return 'info-circle';
-            }
-        }
+        // ============================================
+        // GLOBAL FUNCTIONS
+        // ============================================
 
-        function getToastColor(type) {
-            switch(type) {
-                case 'success': return '#10b981';
-                case 'error': return '#ef4444';
-                case 'warning': return '#f59e0b';
-                default: return '#6366f1';
+        window.toggleNoteExpand = function(element) {
+            const noteContent = element.parentElement;
+            const isExpanded = noteContent.classList.contains('expanded');
+            
+            if (isExpanded) {
+                noteContent.classList.remove('expanded');
+                element.textContent = 'Read more';
+            } else {
+                noteContent.classList.add('expanded');
+                element.textContent = 'Read less';
             }
-        }
+        };
 
-        // Initialize the app
+        window.deleteNote = deleteNote;
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
         document.addEventListener('DOMContentLoaded', initApp);
         window.addEventListener('resize', () => {
             if (!state.isTranscribing) {
                 drawSilentWaveform();
             }
         });
-
-        // Make functions globally available
-        window.toggleNoteExpand = toggleNoteExpand;
-        window.deleteNote = deleteNote;
 
         // Draw initial waveform
         setTimeout(() => {
